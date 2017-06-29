@@ -13,8 +13,8 @@
 // @exclude        http*://gt-1.diviad.com/fb/trading*
 // @exclude        http*://www.ghost-trappers.com/fb/request_badges.php*
 // @exclude        http*://gt-1.diviad.com/fb/request_badges.php*
-// @icon           http://pre01.deviantart.net/30ae/th/pre/i/2013/087/d/9/ghostbusters_logo_icon_by_slamiticon-d5z64m3.png
-// @require        https://cdn.rawgit.com/naptha/tesseract.js/0.2.0/dist/tesseract.js
+// @icon           https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/logo.png
+// @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @copyright      2016+, Geralt Of Rivia
 // @history        6.00 ::: Auto wagering has been implemented, but not tested. it might work.. it might not work.. 
 // @history        5.30 ::: Auto Captcha disables itself after 8 times, to protect you from getting banned. It will re-enable itself after 4~6 Hrs and start hunting ;)
