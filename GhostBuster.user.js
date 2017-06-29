@@ -15,6 +15,7 @@
 // @exclude        http*://gt-1.diviad.com/fb/request_badges.php*
 // @icon           https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/logo.png
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
+// @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2016+, Geralt Of Rivia
 // @history        6.10 ::: Moved the Script to Github.. 
 // @history        6.00 ::: Auto wagering has been implemented, but not tested. it might work.. it might not work.. 
