@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        6.00
+// @version        6.10
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -16,6 +16,7 @@
 // @icon           https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/logo.png
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @copyright      2016+, Geralt Of Rivia
+// @history        6.10 ::: Moved the Script to Github.. 
 // @history        6.00 ::: Auto wagering has been implemented, but not tested. it might work.. it might not work.. 
 // @history        5.30 ::: Auto Captcha disables itself after 8 times, to protect you from getting banned. It will re-enable itself after 4~6 Hrs and start hunting ;)
 // @history        5.20 ::: Displays no. of monsters caught and now has a loot tracker built in to alert you of a loot.
