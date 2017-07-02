@@ -816,6 +816,12 @@ node0.appendChild(linebreak);
 var textnode0 = document.createTextNode("Auto Captcha count- " + localStorage.CaptchaCounter);
 node0.appendChild(textnode0);
 
+var linebreak = document.createElement('br');
+node0.appendChild(linebreak);
+
+var textnode0 = document.createTextNode("Wager count- " + localStorage.WagerCounter);
+node0.appendChild(textnode0);
+
 document.getElementsByClassName("userGroupContainer")[0].appendChild(node0);
 
 // Styling
