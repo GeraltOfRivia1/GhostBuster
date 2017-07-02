@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        6.17
+// @version        6.18
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,6 +17,7 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2016+, Geralt Of Rivia
+// @history        6.18 ::: Minor Fixes for Wagering and Log
 // @history        6.17 ::: Release monster now uses Randid to avoid detection
 // @history        6.16 ::: Minor fixes for Auto-Wagering.
 // @history        6.15 ::: Attempt at Fixing Auto-Wagering. Lets see if this works atleast.
@@ -121,6 +122,7 @@ else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been 
 else if( (localStorage.Wager == "true") && (document.getElementById('wagerContainer') != null) )
 {
 	var luck = Math.floor(Math.random() * (4 - 1)) + 1;
+	localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1
 	window.setTimeout(function() {document.getElementById('croupierButton'+luck).click();}, 2000);
 	window.setTimeout(function() {document.getElementById('closeCroupierButton').click();}, 1000);
 	setTimeout(function(){ location.reload(); }, 3000);
@@ -768,6 +770,7 @@ var button11 = document.createElement("button");
 function titleButton11() {
 var t11;
 if (localStorage.Wager == "true") {
+    localStorage.WagerCounter = 0;
     t11=document.createTextNode("Wagering ON"); }
 else {
     t11=document.createTextNode("Wagering OFF"); }
@@ -794,6 +797,7 @@ button11.onclick=function(){
 if (!localStorage.Monstercounter) {localStorage.Monstercounter = 0;}
 if (!localStorage.LootChecker) {localStorage.LootChecker = "Not Found";}
 if (!localStorage.CaptchaCounter) {localStorage.CaptchaCounter = 0;}
+if (!localStorage.WagerCounter) {localStorage.WagerCounter = 0;}
 
 var node0= document.createElement("P");
 
@@ -816,10 +820,10 @@ document.getElementsByClassName("userGroupContainer")[0].appendChild(node0);
 
 // Styling
 node0.style.color = "white";
-node0.style.fontSize = "14px";
+node0.style.fontSize = "18px";
 node0.style.fontFamily = "Arial";
-node0.style.paddingTop = "3px";
-node0.style.paddingBottom = "8px";
+node0.style.paddingTop = "5px";
+node0.style.paddingBottom = "5px";
 node0.style.margin = "0px";
 
 } else {
