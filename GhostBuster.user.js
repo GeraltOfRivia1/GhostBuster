@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        6.15
+// @version        6.16
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,6 +17,7 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2016+, Geralt Of Rivia
+// @history        6.16 ::: Minor fixes for Auto-Wagering.
 // @history        6.15 ::: Attempt at Fixing Auto-Wagering. Lets see if this works atleast.
 // @history        6.14 ::: Forgot to Undo 6.11 Changes.
 // @history        6.13 ::: Now Auto watches daily videos, But you need to open the Videos page in a Separate Tab( no buttons now)
@@ -120,7 +121,8 @@ else if( (localStorage.Wager == "true") && (document.getElementById('wagerContai
 {
 	var luck = Math.floor(Math.random() * (4 - 1)) + 1;
 	window.setTimeout(function() {document.getElementById('croupierButton'+luck).click();}, 2000);
-	setTimeout(function(){ location.reload(); }, 2000);
+	window.setTimeout(function() {document.getElementById('closeCroupierButton').click();}, 1000);
+	setTimeout(function(){ location.reload(); }, 3000);
 }
 else if (document.location.href.match(/bonus_videos/i))
 {
