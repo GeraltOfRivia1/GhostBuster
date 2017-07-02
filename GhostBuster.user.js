@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        6.16
+// @version        6.17
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,6 +17,7 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2016+, Geralt Of Rivia
+// @history        6.17 ::: Release monster now uses Randid to avoid detection
 // @history        6.16 ::: Minor fixes for Auto-Wagering.
 // @history        6.15 ::: Attempt at Fixing Auto-Wagering. Lets see if this works atleast.
 // @history        6.14 ::: Forgot to Undo 6.11 Changes.
@@ -216,10 +217,11 @@ else
 				//Check if bullying is turned ON, then if this is not the right monster, kick it
 				if(localStorage.BullyMonster == "true" && !(checkMonster.match(monstermatch))) {
 					if(localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML){
-						//To avoid detection we go to the monster page and then click release
-						//setTimeout(function() {document.location = LogPage;}, 1000));
+						//To avoid detection we get the rand id and then click release
+						var mons_menu = document.getElementById('scores_gmj').toString();
+						var rand_id = mons_menu.split('=').pop();
 						setTimeout(function() {localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML; 
-												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster';}, 
+												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster?gtRandom=' + rand_id;}, 
 												(Math.floor(Math.random() * (2000 - 500 + 1)) + 400));
 					}
 				}
