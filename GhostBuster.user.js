@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        6.19
+// @version        7.00
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -16,7 +16,8 @@
 // @icon           https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/logo.png
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
-// @copyright      2016+, Geralt Of Rivia
+// @copyright      2017+, Geralt Of Rivia
+// @history        7.00 ::: Hunt time is now randomized by adding 2-8 secs randomly, added a log to check if autocapthca restarted after waiting for a bit ( to avoid detection)
 // @history        6.19 ::: Minor Fixes for Wagering and Log
 // @history        6.18 ::: Minor Fixes for Wagering and Log
 // @history        6.17 ::: Release monster now uses Randid to avoid detection
@@ -84,9 +85,10 @@ else if (document.getElementsByName("captcha_id")[0])
 			setTimeout(function() {document.getElementsByClassName('fbsubmit')[0].click() ;}, 2000);
 		});
     } else {
-		var numHrs = Math.floor(Math.random() * (6 - 4 + 1)) + 4;
+		var numHrs = getRandomInt(4,6);
 		localStorage.autoCaptcha = true;
 		localStorage.CaptchaCounter = 0;
+		localStorage.DelayedStart = parseInt(localStorage.DelayedStart) + 1;
 		setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
     }
 
@@ -122,7 +124,7 @@ else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been 
 }
 else if( (localStorage.Wager == "true") && (document.getElementById('wagerContainer') != null) )
 {
-	var luck = Math.floor(Math.random() * (4 - 1)) + 1;
+	var luck = getRandomInt(1,3);
 	localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1
 	window.setTimeout(function() {document.getElementById('croupierButton'+luck).click();}, 2000);
 	window.setTimeout(function() {document.getElementById('closeCroupierButton').click();}, 1000);
@@ -132,7 +134,8 @@ else if (document.location.href.match(/bonus_videos/i))
 {
 if(document.getElementById('videoMessage').textContent.match(/Earn one chrono/i))
 	{
-		var vid_mins = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+		var vid_mins = getRandomInt(1,5);
+		//console.log("waiting secs " + vid_mins);
 		window.setTimeout(function() {document.getElementById('nextVideoButton').click()}, vid_mins*1000);
 		setTimeout(function(){ location.reload(); }, (25000 + vid_mins*1000));
 	}
@@ -201,6 +204,8 @@ else
 			
 		var minutes = parseInt(minutesid, 10);
 		var seconds = parseInt(secondsid, 10);
+		var buf_sec = getRandomInt(1,8);
+		seconds += parseInt(buf_sec);
 		var timeDelayValue = (minutes * 60 + seconds) * 1000;
         
 		if (document.getElementsByClassName('logText')[0])
@@ -225,7 +230,7 @@ else
 						var rand_id = mons_menu.split('=').pop();
 						setTimeout(function() {localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML; 
 												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster?gtRandom=' + rand_id;}, 
-												(Math.floor(Math.random() * (2000 - 500 + 1)) + 400));
+												getRandomInt(3000, 4000));
 					}
 				}
 				//if we are not bullying monsters or it's the monster we want, post it
@@ -240,7 +245,7 @@ else
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
 												localStorage.Monstercounter = parseInt(localStorage.Monstercounter) + 1;
 												document.getElementsByClassName('logPost')[0].getElementsByTagName('a')[0].click()  ;}, 
-												(Math.floor(Math.random() * (4000 - 500 + 1)) + 700));
+												getRandomInt(3000, 4000));
 					}
 				}
 			}
@@ -258,19 +263,19 @@ else
 	}
 	else
 	{
-		var numMins = Math.floor(Math.random() * (6 - 4 + 1)) + 4;
+		var numMins = getRandomInt(4,8);
 		titlePlaceHolder = "Something's up, Refreshing in random minutes";
 		setTimeout(function() {document.location = 'http://www.ghost-trappers.com/fb/camp.php';}, 
 		numMins*60*1000);
     }
 }
-UpdateTitle();
+UpdateTitle(buf_sec);
 
-function UpdateTitle()
+function UpdateTitle(buff)
 {
 	if (titlePlaceHolder == "")
     {
-        var minutesid, secondsid, mins, secs, r954, r952;
+        var minutesid, secondsid, mins, secs;
         
 		if (document.getElementById('topHuntMinutes') != null)
 		{
@@ -283,8 +288,14 @@ function UpdateTitle()
 			secondsid = '0';
 		}
 		
+		if (minutesid === "00" && secondsid === "00")
+		{
+			buff =  parseInt(buff) - 1;
+			console.log("buff "+buff);
+		}
+		
         mins = parseInt(minutesid, 10);
-		secs = parseInt(secondsid, 10);
+		secs = parseInt(secondsid, 10) + parseInt(buff);
 		
 		if (mins < 10)
 		{mins = "0" + mins;}
@@ -333,7 +344,7 @@ function UpdateTitle()
 	{
 		document.title = titlePlaceHolder;
 	}
-	setTimeout(UpdateTitle, 1000);
+setTimeout(function(){UpdateTitle(buff);}, 1000);
 }
 
 
@@ -364,6 +375,10 @@ function MonsterTimer()
 
 }
 
+function getRandomInt(min, max) {
+	max++;
+	return Math.floor(Math.random() * (max - min)) + min;
+}
 
 
 // ****** Extended Description ******
@@ -461,7 +476,6 @@ if(typeof(Storage) !== "undefined") {
 
 
 // Automatic submit Captcha using an OCR, safe and recommended
-// To avoid detection you might have to disable it with a timer(no one hunts 24 hrs a day)
 // When disabled you get the alert instead.
 // default = false;
 
@@ -482,6 +496,7 @@ titleButton01();
 document.body.appendChild(button01);
 button01.onclick=function(){
 	localStorage.CaptchaCounter = 0;
+	localStorage.DelayedStart = 0;
     if (localStorage.autoCaptcha == "true") {localStorage.autoCaptcha = false; alert("Auto Captcha Disabled\n\nNotification on Captcha Enabled");titleButton01();}
     else {localStorage.autoCaptcha = true; alert("Auto Captcha Enabled\n\nNotification on Captcha Disabled");titleButton01();}
 };
@@ -798,6 +813,7 @@ button11.onclick=function(){
 if (!localStorage.Monstercounter) {localStorage.Monstercounter = 0;}
 if (!localStorage.LootChecker) {localStorage.LootChecker = "Not Found";}
 if (!localStorage.CaptchaCounter) {localStorage.CaptchaCounter = 0;}
+if (!localStorage.DelayedStart) {localStorage.DelayedStart = 0;}
 if (!localStorage.WagerCounter) {localStorage.WagerCounter = 0;}
 
 var node0= document.createElement("P");
@@ -814,7 +830,13 @@ node0.appendChild(textnode0);
 var linebreak = document.createElement('br');
 node0.appendChild(linebreak);
 
-var textnode0 = document.createTextNode("Auto Captcha count- " + localStorage.CaptchaCounter);
+var textnode0 = document.createTextNode("Auto Captcha count - " + localStorage.CaptchaCounter);
+node0.appendChild(textnode0);
+
+var linebreak = document.createElement('br');
+node0.appendChild(linebreak);
+
+var textnode0 = document.createTextNode("Times Restarted - " + localStorage.DelayedStart);
 node0.appendChild(textnode0);
 
 var linebreak = document.createElement('br');
