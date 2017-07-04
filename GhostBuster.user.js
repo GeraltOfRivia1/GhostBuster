@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        7.00
+// @version        7.10
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,6 +17,7 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2017+, Geralt Of Rivia
+// @history        7.10 ::: Auto-Wagering Fix and added debug messages to monitor if it works. next is to log the rewards
 // @history        7.00 ::: Hunt time is now randomized by adding 2-8 secs randomly, added a log to check if autocapthca restarted after waiting for a bit ( to avoid detection)
 // @history        6.19 ::: Minor Fixes for Wagering and Log
 // @history        6.18 ::: Minor Fixes for Wagering and Log
@@ -125,10 +126,18 @@ else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been 
 else if( (localStorage.Wager == "true") && (document.getElementById('wagerContainer') != null) )
 {
 	var luck = getRandomInt(1,3);
-	localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1
-	window.setTimeout(function() {document.getElementById('croupierButton'+luck).click();}, 2000);
-	window.setTimeout(function() {document.getElementById('closeCroupierButton').click();}, 1000);
-	setTimeout(function(){ location.reload(); }, 3000);
+	console.log("Wager Luck " + luck);
+	
+	localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1;
+	
+	setTimeout(function() {
+	console.log("Clicking the croupierButton"+luck);
+	document.getElementById('croupierButton'+luck).click();}, 2000);
+	
+	//window.setTimeout(function() {document.getElementById('closeCroupierButton').click();}, 1000);
+	setTimeout(function() { 
+	console.log("refreshing the page");
+	location.reload(); }, 2000);
 }
 else if (document.location.href.match(/bonus_videos/i))
 {
@@ -230,7 +239,7 @@ else
 						var rand_id = mons_menu.split('=').pop();
 						setTimeout(function() {localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML; 
 												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster?gtRandom=' + rand_id;}, 
-												getRandomInt(3000, 4000));
+												getRandomInt(2000, 3500));
 					}
 				}
 				//if we are not bullying monsters or it's the monster we want, post it
@@ -291,7 +300,6 @@ function UpdateTitle(buff)
 		if (minutesid === "00" && secondsid === "00")
 		{
 			buff =  parseInt(buff) - 1;
-			console.log("buff "+buff);
 		}
 		
         mins = parseInt(minutesid, 10);
@@ -786,7 +794,6 @@ var button11 = document.createElement("button");
 function titleButton11() {
 var t11;
 if (localStorage.Wager == "true") {
-    localStorage.WagerCounter = 0;
     t11=document.createTextNode("Wagering ON"); }
 else {
     t11=document.createTextNode("Wagering OFF"); }
@@ -805,6 +812,7 @@ button11.onclick=function(){
 		}
     else {
 		localStorage.Wager = true;
+		localStorage.WagerCounter = 0;
 		alert("Auto Wagering ON, Be Careful you will loose Nessy");
 		titleButton11();
 		}
@@ -842,7 +850,7 @@ node0.appendChild(textnode0);
 var linebreak = document.createElement('br');
 node0.appendChild(linebreak);
 
-var textnode0 = document.createTextNode("Wager count- " + localStorage.WagerCounter);
+var textnode0 = document.createTextNode("Times Wagered - " + localStorage.WagerCounter);
 node0.appendChild(textnode0);
 
 document.getElementsByClassName("userGroupContainer")[0].appendChild(node0);
