@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        7.10
+// @version        7.20
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,6 +17,7 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2017+, Geralt Of Rivia
+// @history        7.20 ::: Added Ability for the Captcha to sleep and wake up to avoid detection, it will also log time for us to track sleep time, cleaned log window
 // @history        7.10 ::: Auto-Wagering Fix and added debug messages to monitor if it works. next is to log the rewards
 // @history        7.00 ::: Hunt time is now randomized by adding 2-8 secs randomly, added a log to check if autocapthca restarted after waiting for a bit ( to avoid detection)
 // @history        6.19 ::: Minor Fixes for Wagering and Log
@@ -76,9 +77,20 @@ else if (document.getElementsByName("captcha_id")[0])
     
     if (localStorage.autoCaptcha === "true"){
 		localStorage.CaptchaCounter = parseInt(localStorage.CaptchaCounter) + 1;
+		/*
 		if (parseInt(localStorage.CaptchaCounter) > 9){
 			localStorage.autoCaptcha = false;
+		}*/
+		var dateObj = new Date();
+		var hrs = dateObj.getHours();
+	
+		if (hrs >= 23 || hrs <= 4) {
+			localStorage.autoCaptcha = false;
+			setTimeout(function(){ localStorage.SleepTime = dateObj.toLocaleString();
+			location.reload(); }, 1000);
 		}
+
+
         var cp_id = document.getElementsByName('captcha_id')[0].value;
 		var url = "http://www.ghost-trappers.com/fb/captcha_image.php?id="+cp_id;
 		Tesseract.recognize(url).then(function(result) {
@@ -89,8 +101,11 @@ else if (document.getElementsByName("captcha_id")[0])
 		var numHrs = getRandomInt(4,6);
 		localStorage.autoCaptcha = true;
 		localStorage.CaptchaCounter = 0;
-		localStorage.DelayedStart = parseInt(localStorage.DelayedStart) + 1;
-		setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
+		localStorage.AutoRunCount = parseInt(localStorage.AutoRunCount) + 1;
+		//setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
+		setTimeout(function() {
+			localStorage.WakeTime = new Date().toLocaleString();
+			document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
     }
 
 }
@@ -504,7 +519,9 @@ titleButton01();
 document.body.appendChild(button01);
 button01.onclick=function(){
 	localStorage.CaptchaCounter = 0;
-	localStorage.DelayedStart = 0;
+	localStorage.AutoRunCount = 0;
+	localStorage.SleepTime = "";
+	localStorage.WakeTime = "";
     if (localStorage.autoCaptcha == "true") {localStorage.autoCaptcha = false; alert("Auto Captcha Disabled\n\nNotification on Captcha Enabled");titleButton01();}
     else {localStorage.autoCaptcha = true; alert("Auto Captcha Enabled\n\nNotification on Captcha Disabled");titleButton01();}
 };
@@ -818,50 +835,84 @@ button11.onclick=function(){
 		}
 };
 
-if (!localStorage.Monstercounter) {localStorage.Monstercounter = 0;}
 if (!localStorage.LootChecker) {localStorage.LootChecker = "Not Found";}
-if (!localStorage.CaptchaCounter) {localStorage.CaptchaCounter = 0;}
-if (!localStorage.DelayedStart) {localStorage.DelayedStart = 0;}
+if (!localStorage.Monstercounter) {localStorage.Monstercounter = 0;}
 if (!localStorage.WagerCounter) {localStorage.WagerCounter = 0;}
+if (!localStorage.CaptchaCounter) {localStorage.CaptchaCounter = 0;}
+if (!localStorage.AutoRunCount) {localStorage.AutoRunCount = 0;}
+if (!localStorage.SleepTime) {localStorage.SleepTime = "";}
+if (!localStorage.WakeTime) {localStorage.WakeTime = "";}
 
 var node0= document.createElement("P");
+var textnode, textnode1, linebreak;
 
-var textnode0 = document.createTextNode("Monster Count - " + localStorage.Monstercounter);
+textnode0 = document.createTextNode("Trackers / Counters -");
+linebreak = document.createElement('br');
 node0.appendChild(textnode0);
-
-var linebreak = document.createElement('br');
 node0.appendChild(linebreak);
+	
+if ( localStorage.TrackLoot === "true") { 
+	textnode0 = document.createTextNode("Loot Tracker - " + localStorage.LootChecker);
+	linebreak = document.createElement('br');
+	node0.appendChild(textnode0);
+	node0.appendChild(linebreak);
+}
 
-var textnode0 = document.createTextNode("Loot Found ? - " + localStorage.LootChecker);
-node0.appendChild(textnode0);
+if ( localStorage.BullyMonster === "true") {
+	textnode0 = document.createTextNode("Monster Count - " + localStorage.Monstercounter);
+	linebreak = document.createElement('br');
+	node0.appendChild(textnode0);
+	node0.appendChild(linebreak);
+}
+if ( localStorage.Wager === "true") {
+	textnode0 = document.createTextNode("Times Wagered - " + localStorage.WagerCounter);
+	linebreak = document.createElement('br');
+	node0.appendChild(textnode0);
+}
 
-var linebreak = document.createElement('br');
-node0.appendChild(linebreak);
+var node1= document.createElement("L");
 
-var textnode0 = document.createTextNode("Auto Captcha count - " + localStorage.CaptchaCounter);
-node0.appendChild(textnode0);
+textnode1 = document.createTextNode("Logs for Auto Captcha -");
+linebreak = document.createElement('br');
+node1.appendChild(textnode1);
+node1.appendChild(linebreak);
 
-var linebreak = document.createElement('br');
-node0.appendChild(linebreak);
+textnode1 = document.createTextNode("Auto Captcha count - " + localStorage.CaptchaCounter);
+linebreak = document.createElement('br');
+node1.appendChild(textnode1);
+node1.appendChild(linebreak);
 
-var textnode0 = document.createTextNode("Times Restarted - " + localStorage.DelayedStart);
-node0.appendChild(textnode0);
+textnode1 = document.createTextNode("Times Auto slept - " + localStorage.AutoRunCount);
+linebreak = document.createElement('br');
+node1.appendChild(textnode1);
+node1.appendChild(linebreak);
 
-var linebreak = document.createElement('br');
-node0.appendChild(linebreak);
+textnode1 = document.createTextNode("Slept at " + localStorage.SleepTime);
+linebreak = document.createElement('br');
+node1.appendChild(textnode1);
+node1.appendChild(linebreak);
 
-var textnode0 = document.createTextNode("Times Wagered - " + localStorage.WagerCounter);
-node0.appendChild(textnode0);
+textnode1 = document.createTextNode("Woke up at " + localStorage.WakeTime);
+linebreak = document.createElement('br');
+node1.appendChild(textnode1);
+node1.appendChild(linebreak);
 
 document.getElementsByClassName("userGroupContainer")[0].appendChild(node0);
+document.getElementsByClassName("userGroupContainer")[0].appendChild(node1);
 
-// Styling
+// Styling for Headers
 node0.style.color = "white";
-node0.style.fontSize = "18px";
+node0.style.fontSize = "15px";
 node0.style.fontFamily = "Arial";
 node0.style.paddingTop = "5px";
 node0.style.paddingBottom = "5px";
 node0.style.margin = "0px";
+
+// Styling for Captcha log
+node1.style.color = "white";
+node1.style.paddingTop = "5px";
+node1.style.paddingBottom = "5px";
+
 
 } else {
     
