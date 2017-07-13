@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        7.20
+// @version        7.32
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,6 +17,9 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @copyright      2017+, Geralt Of Rivia
+// @history        7.32 ::: Fixed syntax issues
+// @history        7.31 ::: Fixed syntax issues and changed rand to 1-6
+// @history        7.30 ::: Minor fixes for wager, Auto Captcha, Added ability to wager with selective ghosts ;). Baseline for a BIG future improvement.
 // @history        7.20 ::: Added Ability for the Captcha to sleep and wake up to avoid detection, it will also log time for us to track sleep time, cleaned log window
 // @history        7.10 ::: Auto-Wagering Fix and added debug messages to monitor if it works. next is to log the rewards
 // @history        7.00 ::: Hunt time is now randomized by adding 2-8 secs randomly, added a log to check if autocapthca restarted after waiting for a bit ( to avoid detection)
@@ -94,18 +97,18 @@ else if (document.getElementsByName("captcha_id")[0])
         var cp_id = document.getElementsByName('captcha_id')[0].value;
 		var url = "http://www.ghost-trappers.com/fb/captcha_image.php?id="+cp_id;
 		Tesseract.recognize(url).then(function(result) {
-			document.getElementsByName("captcha_entered_text")[0].value = result.text;
+			document.getElementsByName("captcha_entered_text")[0].value = result.text.replace(/[^A-Za-z]/gi, '');
 			setTimeout(function() {document.getElementsByClassName('fbsubmit')[0].click() ;}, 2000);
 		});
     } else {
-		var numHrs = getRandomInt(4,6);
+		var numHrs = getRandomInt(5,6);
 		localStorage.autoCaptcha = true;
 		localStorage.CaptchaCounter = 0;
 		localStorage.AutoRunCount = parseInt(localStorage.AutoRunCount) + 1;
 		//setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
 		setTimeout(function() {
 			localStorage.WakeTime = new Date().toLocaleString();
-			document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
+			document.location = "http://www.ghost-trappers.com/fb/camp.php";}, numHrs*60*60*1000);
     }
 
 }
@@ -129,7 +132,6 @@ else if (document.location.href.match(/captcha.php/i))
 }
 else if ((localStorage.DailyRewards === "true") && (document.body.innerHTML.indexOf("<div class=\"dcReminder\">") != -1))
 {
-   titlePlaceHolder = "Getting your Daily Reward";
    setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/dc.php?dc_id=" + localStorage.DailyRewardsID;}, 2000);
 }
 else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been added to your inventory!") != -1)
@@ -138,29 +140,34 @@ else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been 
 	titlePlaceHolder = "Acquired Daily Reward, Disabling Auto Click Daily Rewards!";
 	window.setTimeout(function() {window.location.href = document.getElementById('campMenu').href;}, 1000);
 }
-else if( (localStorage.Wager == "true") && (document.getElementById('wagerContainer') != null) )
+else if( (localStorage.Wager === "true") && (document.getElementById('wagerContainer') !== null) && (localStorage.WagerLog === "false") )
 {
-	var luck = getRandomInt(1,3);
-	console.log("Wager Luck " + luck);
+	var checkWager = document.getElementsByClassName('logText')[0].innerHTML;
+	var Wagermatch = new RegExp(localStorage.WagerFilter, 'i');
+	localStorage.WagerLog = true;
 	
-	localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1;
+	if(localStorage.WagerSelection === "true" && !(checkWager.match(Wagermatch))) {
+		setTimeout(function() {
+			console.log("Close Croupier Button "+new Date().toLocaleString());
+		document.getElementById('closeCroupierButton').click();}, 2000);
+	}
+	else {
+		var luck = getRandomInt(1,3);
+		localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1;
 	
-	setTimeout(function() {
-	console.log("Clicking the croupierButton"+luck);
-	document.getElementById('croupierButton'+luck).click();}, 2000);
+		setTimeout(function() {
+			console.log("Croupier Button "+luck+" "+new Date().toLocaleString());
+		document.getElementById('croupierButton'+luck).click();}, 2000);
+	}
 	
-	//window.setTimeout(function() {document.getElementById('closeCroupierButton').click();}, 1000);
-	setTimeout(function() { 
-	console.log("refreshing the page");
-	location.reload(); }, 2000);
+	setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/camp.php";}, 4000);
 }
 else if (document.location.href.match(/bonus_videos/i))
 {
 if(document.getElementById('videoMessage').textContent.match(/Earn one chrono/i))
 	{
 		var vid_mins = getRandomInt(1,5);
-		//console.log("waiting secs " + vid_mins);
-		window.setTimeout(function() {document.getElementById('nextVideoButton').click()}, vid_mins*1000);
+		window.setTimeout(function() {document.getElementById('nextVideoButton').click();}, vid_mins*1000);
 		setTimeout(function(){ location.reload(); }, (25000 + vid_mins*1000));
 	}
 else
@@ -193,8 +200,7 @@ else if (document.location.href.match(/live_feed/i))
         
     } else { titlePlaceHolder = " ";}
 }
-else if ( localStorage.autoExitTrapdoor === "true" && (document.location.href.match(/camp.php/i) || document.location.href.match(/hunt.php/i))
-         && document.getElementsByClassName("trapdoorInterval")[0].innerHTML !== "")
+else if ( localStorage.autoExitTrapdoor === "true" && (document.location.href.match(/camp.php/i) || document.location.href.match(/hunt.php/i)) && document.getElementsByClassName("trapdoorInterval")[0].innerHTML !== "")
 {
     titlePlaceHolder = "Leaving Trapdoor" ;
     window.setTimeout(function() {document.getElementsByClassName('trapdoorLeaveButton')[0].click();}, 500);
@@ -205,6 +211,7 @@ else
 {
 	var huntLink = document.getElementById('topHuntActive').firstElementChild.href;
     var drinkCount = document.getElementById('profile_whisky_quantity').textContent;
+	localStorage.WagerLog = false;
     
     if (drinkCount <= 6)
     {
@@ -215,7 +222,7 @@ else
 	{
         var minutesid, secondsid;
 
-		if (document.getElementById('topHuntSeconds') != null)
+		if (document.getElementById('topHuntSeconds') !== null)
 		{
 			minutesid = document.getElementById('topHuntMinutes').innerHTML;
 			secondsid = document.getElementById('topHuntSeconds').innerHTML;
@@ -228,7 +235,7 @@ else
 			
 		var minutes = parseInt(minutesid, 10);
 		var seconds = parseInt(secondsid, 10);
-		var buf_sec = getRandomInt(1,8);
+		var buf_sec = getRandomInt(1,6);
 		seconds += parseInt(buf_sec);
 		var timeDelayValue = (minutes * 60 + seconds) * 1000;
         
@@ -237,8 +244,8 @@ else
             var checkMonster = document.getElementsByClassName('logText')[0].innerHTML;
 			var LootMatch = new RegExp(localStorage.Lootid, 'i');
 
-			if ((localStorage.TrackLoot == "true") && (checkMonster.match(LootMatch))){
-				localStorage.LootChecker = localStorage.Lootid + " FOUND!";
+			if ((localStorage.TrackLoot === "true") && (checkMonster.match(LootMatch))){
+				localStorage.LootChecker = localStorage.Lootid + " Found - " + new Date().toLocaleString();
 			}
 			
 		    if (checkMonster.match(/is too strong for you alone/i))
@@ -247,14 +254,12 @@ else
 				var LogPage = document.getElementsByClassName('logImage')[0].getElementsByTagName('a')[0].href;
 				
 				//Check if bullying is turned ON, then if this is not the right monster, kick it
-				if(localStorage.BullyMonster == "true" && !(checkMonster.match(monstermatch))) {
+				if(localStorage.BullyMonster === "true" && !(checkMonster.match(monstermatch))) {
 					if(localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML){
 						//To avoid detection we get the rand id and then click release
-						var mons_menu = document.getElementById('scores_gmj').toString();
-						var rand_id = mons_menu.split('=').pop();
 						setTimeout(function() {localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML; 
-												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster?gtRandom=' + rand_id;}, 
-												getRandomInt(2000, 3500));
+												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster';}, 
+												getRandomInt(1000, 3000));
 					}
 				}
 				//if we are not bullying monsters or it's the monster we want, post it
@@ -262,14 +267,13 @@ else
 				
 					if (localStorage.monsterAlert === "true" && localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML) {
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
-												alert("You got a monster, you might want to send it to live feed (or remove it "
-													+ "with irrelevance).\n\nGood luck!");}, 500);
+												alert("You got a monster, you might want to send it to live feed (or remove it " + "with irrelevance).\n\nGood luck!");}, 500);
 					}
 					if (localStorage.monsterHunt === "true" && localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML) {
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
 												localStorage.Monstercounter = parseInt(localStorage.Monstercounter) + 1;
 												document.getElementsByClassName('logPost')[0].getElementsByTagName('a')[0].click()  ;}, 
-												getRandomInt(3000, 4000));
+												getRandomInt(1000, 3000));
 					}
 				}
 			}
@@ -297,11 +301,11 @@ UpdateTitle(buf_sec);
 
 function UpdateTitle(buff)
 {
-	if (titlePlaceHolder == "")
+	if (titlePlaceHolder === "")
     {
         var minutesid, secondsid, mins, secs;
         
-		if (document.getElementById('topHuntMinutes') != null)
+		if (document.getElementById('topHuntMinutes') !== null)
 		{
 			minutesid = document.getElementById('topHuntMinutes').innerHTML;
 			secondsid = document.getElementById('topHuntSeconds').innerHTML;
@@ -403,6 +407,34 @@ function getRandomInt(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min;
 }
 
+function pasteToBin(title, message){
+	GM_xmlhttpRequest({
+		  method: "POST",
+		  url: "https://pastebin.com/api/api_login.php",
+		  data: "api_dev_key=***&api_user_name=***&api_user_password=***",
+		  headers: {
+			"Content-Type": "application/x-www-form-urlencoded",              
+		  },
+		  onload: function(response) {
+			loginkey = response.response;
+			if (!loginkey.match(/BAD/i)){
+				GM_xmlhttpRequest({
+						  method: "POST",
+						  url: "https://pastebin.com/api/api_post.php",
+						  data: "api_option=paste&api_user_key="+loginkey+"&api_paste_private=2&api_paste_name="+title+"&api_paste_expire_date=1W&api_dev_key=***&api_paste_code="+message+" - "+new Date().toLocaleString(),
+						  headers: {
+							"Content-Type": "application/x-www-form-urlencoded",              
+						  },
+						  onload: function(response) {
+							//console.log(JSON.stringify(response));
+							console.log("url -" + response.response);
+						  }
+						});
+							
+				}
+			}
+	});
+}
 
 // ****** Extended Description ******
 // 
@@ -508,7 +540,7 @@ var button01 = document.createElement("button");
 
 function titleButton01() {
 var t;
-if (localStorage.autoCaptcha == "true") {
+if (localStorage.autoCaptcha === "true") {
     t=document.createTextNode("Auto Captcha is Enabled"); }
 else {
     t=document.createTextNode("Auto Captcha is Disabled"); }
@@ -522,7 +554,7 @@ button01.onclick=function(){
 	localStorage.AutoRunCount = 0;
 	localStorage.SleepTime = "";
 	localStorage.WakeTime = "";
-    if (localStorage.autoCaptcha == "true") {localStorage.autoCaptcha = false; alert("Auto Captcha Disabled\n\nNotification on Captcha Enabled");titleButton01();}
+    if (localStorage.autoCaptcha === "true") {localStorage.autoCaptcha = false; alert("Auto Captcha Disabled\n\nNotification on Captcha Enabled");titleButton01();}
     else {localStorage.autoCaptcha = true; alert("Auto Captcha Enabled\n\nNotification on Captcha Disabled");titleButton01();}
 };
 
@@ -539,7 +571,7 @@ var button02 = document.createElement("button");
 
 function titleButton02() {
 var t;
-if (localStorage.autoLiveFeedNew == "true") {
+if (localStorage.autoLiveFeedNew === "true") {
     t=document.createTextNode("Auto Live Feed is Enabled"); }
 else {
     t=document.createTextNode("Auto Live Feed is Disabled"); }
@@ -549,7 +581,7 @@ button02.appendChild(t);
 titleButton02();
 document.body.appendChild(button02);
 button02.onclick=function(){
-    if (localStorage.autoLiveFeedNew == "true") {localStorage.autoLiveFeedNew = false; alert("Auto Live Feed is now Disabled");titleButton02();}
+    if (localStorage.autoLiveFeedNew === "true") {localStorage.autoLiveFeedNew = false; alert("Auto Live Feed is now Disabled");titleButton02();}
     else {localStorage.autoLiveFeedNew = true; alert("Auto Live Feed is now Enabled");titleButton02();}
 };
 
@@ -572,9 +604,9 @@ var button03 = document.createElement("button");
 
 function titleButton03() {
 var t;
-if (localStorage.monsterHunt == "true") {
+if (localStorage.monsterHunt === "true") {
     t=document.createTextNode("Monster Auto-Hunt is Enabled"); }
-else if (localStorage.monsterAlert == "true") {
+else if (localStorage.monsterAlert === "true") {
     t=document.createTextNode("Monster Alert is Enabled"); }
 else { t=document.createTextNode("Monster Alert/Auto-Hunt are Disabled"); }
 button03.innerHTML = "";
@@ -617,7 +649,7 @@ var button04 = document.createElement("button");
 
 function titleButton04() {
 var t;
-if (localStorage.autoExitTrapdoor == "true") {
+if (localStorage.autoExitTrapdoor === "true") {
     t=document.createTextNode("Auto-Exit Trapdoor is Enabled"); }
 else {
     t=document.createTextNode("Auto-Exit Trapdoor is Disabled"); }
@@ -627,7 +659,7 @@ button04.appendChild(t);
 titleButton04();
 document.body.appendChild(button04);
 button04.onclick=function(){
-    if (localStorage.autoExitTrapdoor == "true") {localStorage.autoExitTrapdoor = false; alert("Auto-Exit Trapdoor is now Disabled");titleButton04();}
+    if (localStorage.autoExitTrapdoor === "true") {localStorage.autoExitTrapdoor = false; alert("Auto-Exit Trapdoor is now Disabled");titleButton04();}
     else {localStorage.autoExitTrapdoor = true; alert("Auto-Exit Trapdoor is now Enabled\n\nNo need to buy Magic Rope :)");titleButton04();}
 };
 
@@ -644,7 +676,7 @@ var button05 = document.createElement("button");
 
 function titleButton05() {
 var t;
-if (localStorage.animationSwitch == "true") {
+if (localStorage.animationSwitch === "true") {
     t=document.createTextNode("Animation is On"); }
 else {
     t=document.createTextNode("Animation is Off"); }
@@ -654,7 +686,7 @@ button05.appendChild(t);
 titleButton05();
 document.body.appendChild(button05);
 button05.onclick=function(){
-    if (localStorage.animationSwitch == "true") {localStorage.animationSwitch = false; alert("Animation is now off");titleButton05();}
+    if (localStorage.animationSwitch === "true") {localStorage.animationSwitch = false; alert("Animation is now off");titleButton05();}
     else {localStorage.animationSwitch = true; alert("Animation is now on");titleButton05();}
 };
 
@@ -691,7 +723,7 @@ var button07 = document.createElement("button");
 
 function titleButton07() {
 var t07;
-if (localStorage.DailyRewards == "true") {
+if (localStorage.DailyRewards === "true") {
     t07=document.createTextNode("Daily Rewards is On"); }
 else {
     t07=document.createTextNode("Daily Rewards is Off"); }
@@ -704,7 +736,7 @@ button07.onclick=function(){
     
     var selection1 = prompt("Type the Daily Reward ID to start collecting Daily reward or Blank to disable", localStorage.DailyRewardsID);
     
-    if (selection1 === "" || selection1 === null || selection1 == 0 ){
+    if (selection1 === "" || selection1 === null || selection1 === 0 ){
         localStorage.DailyRewards = false;
         alert("Daily Reward has been Disabled");
         titleButton07();}
@@ -724,7 +756,7 @@ var button08 = document.createElement("button");
 
 function titleButton08() {
 var t08;
-if (localStorage.BullyMonster == "true") {
+if (localStorage.BullyMonster === "true") {
     t08=document.createTextNode("Bullying Monsters On for - "+ localStorage.MonsterName); }
 else {
     t08=document.createTextNode("Bullying Monsters Off"); }
@@ -737,7 +769,7 @@ button08.onclick=function(){
     
     var selection3 = prompt("Enter the Name for the Monster, All other Monsters will be Removed", localStorage.MonsterName);
     
-    if (selection3 === "" || selection3 === null || selection3 == 0 ){
+    if (selection3 === "" || selection3 === null || selection3 === 0 ){
         localStorage.BullyMonster = false;
         alert("Bullying Monster Disabled\n\n"+ 
               "To Disable delete the contents and click okay");
@@ -760,7 +792,7 @@ var button09 = document.createElement("button");
 
 function titleButton09() {
 var t09;
-if (localStorage.TrackLoot == "true") {
+if (localStorage.TrackLoot === "true") {
     t09=document.createTextNode("Tracking - "+ localStorage.Lootid); }
 else {
     t09=document.createTextNode("Loot Tracking Off"); }
@@ -773,7 +805,7 @@ button09.onclick=function(){
     
     var loot_to_find = prompt("Enter the Name of the loot we are tracking", localStorage.Lootid);
     
-    if (loot_to_find === "" || loot_to_find === null || loot_to_find == 0 ){
+    if (loot_to_find === "" || loot_to_find === null || loot_to_find === 0 ){
         localStorage.TrackLoot = false;
 		localStorage.LootChecker = "Not Found";
         alert("Loot Tracking Off");
@@ -805,12 +837,15 @@ button10.onclick=function(){
 
 // Enable Wagering
 if (!localStorage.Wager) {localStorage.Wager = false;}
+if (!localStorage.WagerSelection) {localStorage.WagerSelection = false;}
+if (!localStorage.WagerFilter) {localStorage.WagerFilter = "";}
+if (!localStorage.WagerLog) {localStorage.WagerLog = false;}
 
 var button11 = document.createElement("button");
 
 function titleButton11() {
 var t11;
-if (localStorage.Wager == "true") {
+if (localStorage.Wager === "true") {
     t11=document.createTextNode("Wagering ON"); }
 else {
     t11=document.createTextNode("Wagering OFF"); }
@@ -822,12 +857,24 @@ titleButton11();
 document.body.appendChild(button11);
 
 button11.onclick=function(){
-    if (localStorage.Wager == "true") {
+    if (localStorage.Wager === "true") {
 		localStorage.Wager = false; 
 		alert("Auto Wagering OFF");
 		titleButton11();
 		}
     else {
+		
+		var skip_ghost = prompt("Enter the wagering filter (partial name|partial name)", localStorage.WagerFilter);
+				
+		if (skip_ghost === "" || skip_ghost === null || skip_ghost === 0 ){
+			localStorage.WagerSelection = false;
+			localStorage.WagerFilter = "";
+		}
+		else {
+			localStorage.WagerSelection = true;
+			localStorage.WagerFilter = skip_ghost;
+		}
+		
 		localStorage.Wager = true;
 		localStorage.WagerCounter = 0;
 		alert("Auto Wagering ON, Be Careful you will loose Nessy");
