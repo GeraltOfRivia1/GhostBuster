@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        7.32
+// @version        8.00
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -16,7 +16,9 @@
 // @icon           https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/logo.png
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
+// @grant          GM_xmlhttpRequest
 // @copyright      2017+, Geralt Of Rivia
+// @history        8.00 ::: Massive update, if you have a pastebin account, you can use it to track the loot drop you are aiming for.
 // @history        7.32 ::: Fixed syntax issues
 // @history        7.31 ::: Fixed syntax issues and changed rand to 1-6
 // @history        7.30 ::: Minor fixes for wager, Auto Captcha, Added ability to wager with selective ghosts ;). Baseline for a BIG future improvement.
@@ -77,7 +79,7 @@ else if (document.getElementsByName("captcha_id")[0])
 {
     titlePlaceHolder = "Captcha" ;
     document.getElementsByName('captcha_entered_text')[0].focus();
-    
+
     if (localStorage.autoCaptcha === "true"){
 		localStorage.CaptchaCounter = parseInt(localStorage.CaptchaCounter) + 1;
 		/*
@@ -89,6 +91,7 @@ else if (document.getElementsByName("captcha_id")[0])
 	
 		if (hrs >= 23 || hrs <= 4) {
 			localStorage.autoCaptcha = false;
+            pasteToBin("Log Update : Sleeping Now","Script Slept at - "+(new Date().toLocaleString()));
 			setTimeout(function(){ localStorage.SleepTime = dateObj.toLocaleString();
 			location.reload(); }, 1000);
 		}
@@ -106,6 +109,7 @@ else if (document.getElementsByName("captcha_id")[0])
 		localStorage.CaptchaCounter = 0;
 		localStorage.AutoRunCount = parseInt(localStorage.AutoRunCount) + 1;
 		//setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/camp.php"}, numHrs*60*60*1000);
+        pasteToBin("Log Update : Waking up Now","Script waking up at - "+(new Date().toLocaleString()));
 		setTimeout(function() {
 			localStorage.WakeTime = new Date().toLocaleString();
 			document.location = "http://www.ghost-trappers.com/fb/camp.php";}, numHrs*60*60*1000);
@@ -238,13 +242,14 @@ else
 		var buf_sec = getRandomInt(1,6);
 		seconds += parseInt(buf_sec);
 		var timeDelayValue = (minutes * 60 + seconds) * 1000;
-        
+
 		if (document.getElementsByClassName('logText')[0])
 		{
             var checkMonster = document.getElementsByClassName('logText')[0].innerHTML;
 			var LootMatch = new RegExp(localStorage.Lootid, 'i');
 
 			if ((localStorage.TrackLoot === "true") && (checkMonster.match(LootMatch))){
+                pasteToBin("Log Update : Found Loot",localStorage.Lootid + " Found - " + new Date().toLocaleString());
 				localStorage.LootChecker = localStorage.Lootid + " Found - " + new Date().toLocaleString();
 			}
 			
@@ -335,37 +340,37 @@ function UpdateTitle(buff)
         {document.title = "Hunting in " + mins + ':' + secs;}
         
         if (localStorage.animationSwitch === "true"){
-        if (mins === '00' && secondsid % 60 === 29) {document.title = document.title + " " + " (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 28) {document.title = document.title + " " + "   (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 27) {document.title = document.title + " " + " (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 26) {document.title = document.title + " " + "   (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 25) {document.title = document.title + " " + " (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 24) {document.title = document.title + " " + "   (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 23) {document.title = document.title + " " + " (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 22) {document.title = document.title + " " + "   (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 21) {document.title = document.title + " " + " (, 00)";}
-        else if (mins === '00' && secondsid % 60 === 20) {document.title = document.title + " " + " (00 , )";}
-        else if (mins === '00' && secondsid % 60 === 19) {document.title = document.title + " " + "  :::>";}
-        else if (mins === '00' && secondsid % 60 === 18) {document.title = document.title + " " + "  ]:::::>";}
-        else if (mins === '00' && secondsid % 60 === 17) {document.title = document.title + " " + "  =[]::::::>";}
-        else if (mins === '00' && secondsid % 60 === 16) {document.title = document.title + " " + " o==[]::::";}
-        else if (mins === '00' && secondsid % 60 === 15) {document.title = document.title + " " + "  v(' .' )v";}
-        else if (mins === '00' && secondsid % 60 === 14) {document.title = document.title + " " + "  v( ‘.’ )v";}
-        else if (mins === '00' && secondsid % 60 === 13) {document.title = document.title + " " + "  v( ‘o’ )v";}
-        else if (mins === '00' && secondsid % 60 === 12) {document.title = document.title + " " + "  (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 11) {document.title = document.title + " " + "    (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 10) {document.title = document.title + " " + "      (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 9) {document.title = document.title + " " + "  ::>    (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 8) {document.title = document.title + " " + "  :::>    (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 7) {document.title = document.title + " " + "  ::>    (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 6) {document.title = document.title + " " + "  ::>  (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 5) {document.title = document.title + " " + "  ::> (>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 4) {document.title = document.title + " " + "  ::>(>‘o’)>";}
-        else if (mins === '00' && secondsid % 60 === 3) {document.title = document.title + " " + "  ( つ﹏╰)";}
-        else if (mins === '00' && secondsid % 60 === 2) {document.title = document.title + " " + "  ( つ﹏╰)";}
-        else if (mins === '00' && secondsid % 60 === 1) {document.title = document.title + " " + "  ( つ﹏╰) <Take my loot)";}
+        if (mins === '00' && secondsid % 60 === 29) {document.title = document.title + " " + " (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 28) {document.title = document.title + " " + "   (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 27) {document.title = document.title + " " + " (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 26) {document.title = document.title + " " + "   (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 25) {document.title = document.title + " " + " (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 24) {document.title = document.title + " " + "   (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 23) {document.title = document.title + " " + " (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 22) {document.title = document.title + " " + "   (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 21) {document.title = document.title + " " + " (, 00)";}
+        else if (mins === '00' && secondsid % 60 === 20) {document.title = document.title + " " + " (00 , )";}
+        else if (mins === '00' && secondsid % 60 === 19) {document.title = document.title + " " + "  :::>";}
+        else if (mins === '00' && secondsid % 60 === 18) {document.title = document.title + " " + "  ]:::::>";}
+        else if (mins === '00' && secondsid % 60 === 17) {document.title = document.title + " " + "  =[]::::::>";}
+        else if (mins === '00' && secondsid % 60 === 16) {document.title = document.title + " " + " o==[]::::";}
+        else if (mins === '00' && secondsid % 60 === 15) {document.title = document.title + " " + "  v(' .' )v";}
+        else if (mins === '00' && secondsid % 60 === 14) {document.title = document.title + " " + "  v( ‘.’ )v";}
+        else if (mins === '00' && secondsid % 60 === 13) {document.title = document.title + " " + "  v( ‘o’ )v";}
+        else if (mins === '00' && secondsid % 60 === 12) {document.title = document.title + " " + "  (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 11) {document.title = document.title + " " + "    (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 10) {document.title = document.title + " " + "      (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 9) {document.title = document.title + " " + "  ::>    (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 8) {document.title = document.title + " " + "  :::>    (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 7) {document.title = document.title + " " + "  ::>    (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 6) {document.title = document.title + " " + "  ::>  (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 5) {document.title = document.title + " " + "  ::> (>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 4) {document.title = document.title + " " + "  ::>(>‘o’)>";}
+        else if (mins === '00' && secondsid % 60 === 3) {document.title = document.title + " " + "  ( つ﹏╰)";}
+        else if (mins === '00' && secondsid % 60 === 2) {document.title = document.title + " " + "  ( つ﹏╰)";}
+        else if (mins === '00' && secondsid % 60 === 1) {document.title = document.title + " " + "  ( つ﹏╰) <Take my loot)";}
         }
-        
+
 	}
 	else
 	{
@@ -383,7 +388,7 @@ function MonsterTimer()
     check = document.getElementById('updateText').title;
     check2 = parseInt(check.replace( /^\D+/g, ''), 10);
     check3 = check2 + switcH;
-    
+
     function InnerMonster() {
 
         if (check3 > 0)
@@ -397,7 +402,7 @@ function MonsterTimer()
             window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/live_feed.php";}, 500);
         }
     }
-    
+
     InnerMonster();
 
 }
@@ -411,9 +416,9 @@ function pasteToBin(title, message){
 	GM_xmlhttpRequest({
 		  method: "POST",
 		  url: "https://pastebin.com/api/api_login.php",
-		  data: "api_dev_key=***&api_user_name=***&api_user_password=***",
+		  data: "api_dev_key="+localStorage.DevApi+"&api_user_name="+localStorage.Username+"&api_user_password="+localStorage.Password,
 		  headers: {
-			"Content-Type": "application/x-www-form-urlencoded",              
+			"Content-Type": "application/x-www-form-urlencoded",
 		  },
 		  onload: function(response) {
 			loginkey = response.response;
@@ -421,31 +426,31 @@ function pasteToBin(title, message){
 				GM_xmlhttpRequest({
 						  method: "POST",
 						  url: "https://pastebin.com/api/api_post.php",
-						  data: "api_option=paste&api_user_key="+loginkey+"&api_paste_private=2&api_paste_name="+title+"&api_paste_expire_date=1W&api_dev_key=***&api_paste_code="+message+" - "+new Date().toLocaleString(),
+						  data: "api_option=paste&api_user_key="+loginkey+"&api_paste_private=2&api_paste_name="+title+"&api_paste_expire_date=1W&api_dev_key="+localStorage.DevApi+"&api_paste_code="+message+" - "+new Date().toLocaleString(),
 						  headers: {
-							"Content-Type": "application/x-www-form-urlencoded",              
+							"Content-Type": "application/x-www-form-urlencoded",
 						  },
 						  onload: function(response) {
 							//console.log(JSON.stringify(response));
 							console.log("url -" + response.response);
 						  }
 						});
-							
+
 				}
 			}
 	});
 }
 
 // ****** Extended Description ******
-// 
+//
 // Welcome to the new and fun way to play Ghost Trappers!
-// 
+//
 // This script is simple and easy to use Ghost Trappers auto-hunter and auto-assist LF.
-// 
+//
 // Works on Chrome, Firefox, Comodo Dragon and Chromium web browsers.
 // No configuration needed, just enable the script and you will catch ghosts like never before!!!
-// 
-// If you care for your fellow ghost trappers, then rate and share this script. Everyone needs to play GT like the top 100+ do. 
+//
+// If you care for your fellow ghost trappers, then rate and share this script. Everyone needs to play GT like the top 100+ do.
 // Take care: Only share with people you truly trust and never admit to using it if confronted. Use an anonymous source if needed.
 //
 // New in version 4:
@@ -458,12 +463,12 @@ function pasteToBin(title, message){
 // Disable animation
 //
 // To edit these options simply click the desired option buttons at the bottom of the page.
-// 
+//
 // New in version 2.10:
 // Added Live Feed support - now you can open 1 window for hunting and 1 window for LF assisting.
 // Refreshes between 39 and 78 seconds for safety purposes.
 // Make sure you disable your older LF script!!!
-// 
+//
 // New in version 2:
 // Monster encounter notifier. When you encounter a monster on the next hunt, you get an alert.
 // Renewed code, faster hunts!
@@ -471,10 +476,10 @@ function pasteToBin(title, message){
 // Maintenance page refreshes every 20 secs.
 // Goes back to camp automatically after captcha input.
 // Small change to titles, added animation.
-// 
-// This Script greatly modified from very popular autohunt script: 
+//
+// This Script greatly modified from very popular autohunt script:
 // FB - Ghost Trappers Smart Autohunt V2 [by iispyderii & Jaryl].
-// 
+//
 // Changes made to the original script:
 // Added a Captcha notifier.
 // Fixed hover over icon dropdown menus on Chrome and Comodo.
@@ -484,30 +489,35 @@ function pasteToBin(title, message){
 // Autocaptcha disabled (it was not working all the time, so you do not get caught).
 // Removed useless/not working content: Monster assist, Daily Clicks, and Menu/Settings details at the top of every page.
 // Fixed animation program on Chrome.
-// 
+//
 // Don't get caught!!! Take precautions:
 // Use this script adequately and you should be fine. SO do NOT be hunting 24 hours straight and DO take short "breaks".
 // Keep one page open when using this script, many pages will try to hunt many times. [Might lead to excess hunts].
 // Do not screenshot showing the tab title. VERY important.
-// 
-// Good links: 
+//
+// Good links:
 // Here is a really good script for Live-feed (old way of assisting)
 // http://userscripts.org:8080/scripts/show/153781
-// This is the best script for Mousehunt hunting: 
+// This is the best script for Mousehunt hunting:
 // http://userscripts.org:8080/scripts/show/78731
-// 
-// * Update: 
+//
+// * Update:
 // Chrome's latest update does not allow scripts to be loaded manually if they are not from the Google App Store, to fix that you will need to install Tampermonkey from the Google App Store. With Tampermonkey enabled, you can click install on this page to install the script.
-// 
+//
 // Alternatively, you can install scripts the old way in Comodo Dragon, which is another good browser based on Chromium (as is Chrome).
-// 
-// Keywords: 
+//
+// Keywords:
 // ghost trappers autohunt ghosttrappers auto hunt ghosts ghost trapper trappers auto hunt autohunt autobot auto bot botter smart autohunt simple ah ghost monster livefeed monsters live feed captcha entry automatic hunting ghost trappers auto hunting ghosts javascript script tampermonkey greasemonkey easy
 // FOR the tesseract Auto captcha this is what happens
 // Also be aware of these @require semantics
 // At the time that the user script is installed, Greasemonkey will download and keep a locally cached copy of the remote file that can be read almost instantly. The cached copy is kept in the same folder as your installed user-script. The remote file is not monitored for changes.
 // Please be aware that, at the time of writing this answer, this @require tag is only read at install-time. If you edit an existing user script to add this tag, it will be ignored. You need to uninstall and re-install your user script to pick up the change.
-// 
+//
+//
+// Pastebin Api - https://pastebin.com/api
+// Create a Pastebin.com login to get the Pastebin Api key, username and password. Once done, you can configure the script to create a paste so you know if
+// the loot you are hunting for dropped. this way you can watch a movie and chill out at a bar and the script keeps running, you can change the setup remotely once the loot has been dropped.
+//
 // ****** End Extended Description ******
 
 
@@ -703,9 +713,9 @@ button06.appendChild(t06);
 document.body.appendChild(button06);
 button06.onclick=function(){
     if (localStorage.huntsTillCaptcha3) {
-        alert("There are roughly " + localStorage.huntsTillCaptcha3 + " hunts remaining till Captcha (or less) -\n" + ( 75 - localStorage.huntsTillCaptcha3 ) + 
+        alert("There are roughly " + localStorage.huntsTillCaptcha3 + " hunts remaining till Captcha (or less) -\n" + ( 75 - localStorage.huntsTillCaptcha3 ) +
               " hunts since last seen captcha (excluding friend/auto hunts)\n\nCount resets at Captcha\n\nIf you refresh a lot, " +
-              "or if you had multiple pages open, or if you disabled the script for a while, or if you spam the power hunts, then this number will be inaccurate.\n\n" + 
+              "or if you had multiple pages open, or if you disabled the script for a while, or if you spam the power hunts, then this number will be inaccurate.\n\n" +
               "Note: Automatic trap system hunts and friend-hunts are not counted!"); }
     else {alert("You need to encounter a captcha to start the count");}
 };
@@ -733,9 +743,9 @@ button07.appendChild(t07);
 titleButton07();
 document.body.appendChild(button07);
 button07.onclick=function(){
-    
+
     var selection1 = prompt("Type the Daily Reward ID to start collecting Daily reward or Blank to disable", localStorage.DailyRewardsID);
-    
+
     if (selection1 === "" || selection1 === null || selection1 === 0 ){
         localStorage.DailyRewards = false;
         alert("Daily Reward has been Disabled");
@@ -766,12 +776,12 @@ button08.appendChild(t08);
 titleButton08();
 document.body.appendChild(button08);
 button08.onclick=function(){
-    
+
     var selection3 = prompt("Enter the Name for the Monster, All other Monsters will be Removed", localStorage.MonsterName);
-    
+
     if (selection3 === "" || selection3 === null || selection3 === 0 ){
         localStorage.BullyMonster = false;
-        alert("Bullying Monster Disabled\n\n"+ 
+        alert("Bullying Monster Disabled\n\n"+
               "To Disable delete the contents and click okay");
         titleButton08();}
     else {
@@ -802,9 +812,9 @@ button09.appendChild(t09);
 titleButton09();
 document.body.appendChild(button09);
 button09.onclick=function(){
-    
+
     var loot_to_find = prompt("Enter the Name of the loot we are tracking", localStorage.Lootid);
-    
+
     if (loot_to_find === "" || loot_to_find === null || loot_to_find === 0 ){
         localStorage.TrackLoot = false;
 		localStorage.LootChecker = "Not Found";
@@ -858,14 +868,14 @@ document.body.appendChild(button11);
 
 button11.onclick=function(){
     if (localStorage.Wager === "true") {
-		localStorage.Wager = false; 
+		localStorage.Wager = false;
 		alert("Auto Wagering OFF");
 		titleButton11();
 		}
     else {
-		
+
 		var skip_ghost = prompt("Enter the wagering filter (partial name|partial name)", localStorage.WagerFilter);
-				
+
 		if (skip_ghost === "" || skip_ghost === null || skip_ghost === 0 ){
 			localStorage.WagerSelection = false;
 			localStorage.WagerFilter = "";
@@ -874,11 +884,77 @@ button11.onclick=function(){
 			localStorage.WagerSelection = true;
 			localStorage.WagerFilter = skip_ghost;
 		}
-		
+
 		localStorage.Wager = true;
 		localStorage.WagerCounter = 0;
 		alert("Auto Wagering ON, Be Careful you will loose Nessy");
 		titleButton11();
+		}
+};
+
+    // Enable Paste to Bin
+if (!localStorage.BinPaster) {localStorage.BinPaster = false;}
+if (!localStorage.DevApi) {localStorage.DevApi = "";}
+if (!localStorage.Username) {localStorage.Username = "";}
+if (!localStorage.Password) {localStorage.Password = "";}
+
+var button12 = document.createElement("button");
+
+function titleButton12() {
+var t12;
+if (localStorage.BinPaster === "true") {
+    t12=document.createTextNode("PasteBin Config ON"); }
+else {
+    t12=document.createTextNode("PasteBin Config OFF"); }
+button12.innerHTML = "";
+button12.appendChild(t12);
+}
+
+titleButton12();
+document.body.appendChild(button12);
+
+button12.onclick=function(){
+    if (localStorage.BinPaster === "true") {
+		localStorage.BinPaster = false;
+		alert("Turning OFF Pastebin Config");
+		titleButton12();
+		}
+    else {
+
+		var BinData = prompt("Enter PasteBin Devapi", localStorage.DevApi);
+
+		if (BinData === "" || BinData === null || BinData === 0 ){
+			localStorage.BinPaster = false;
+			localStorage.DevApi = "";
+			return;
+		}
+		else
+			localStorage.DevApi = BinData;
+
+		BinData = prompt("Enter PasteBin Username", localStorage.Username);
+
+		if (BinData === "" || BinData === null || BinData === 0 ){
+			localStorage.BinPaster = false;
+			localStorage.Username = "";
+			return;
+		}
+		else
+			localStorage.Username = BinData;
+
+		BinData = prompt("Enter PasteBin Password", localStorage.Password);
+
+		if (BinData === "" || BinData === null || BinData === 0 ){
+			localStorage.BinPaster = false;
+			localStorage.Password = "";
+			return;
+		}
+		else
+			localStorage.Password = BinData;
+
+		localStorage.BinPaster = true;
+
+		alert("Posting to Pastebin ON");
+		titleButton12();
 		}
 };
 
@@ -897,8 +973,8 @@ textnode0 = document.createTextNode("Trackers / Counters -");
 linebreak = document.createElement('br');
 node0.appendChild(textnode0);
 node0.appendChild(linebreak);
-	
-if ( localStorage.TrackLoot === "true") { 
+
+if ( localStorage.TrackLoot === "true") {
 	textnode0 = document.createTextNode("Loot Tracker - " + localStorage.LootChecker);
 	linebreak = document.createElement('br');
 	node0.appendChild(textnode0);
