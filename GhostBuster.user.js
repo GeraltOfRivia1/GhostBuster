@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        8.00
+// @version        8.10
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2017+, Geralt Of Rivia
+// @history        8.10 ::: Implemented Auto Plasma Load, when the cauldron runs out of plasma.. it should be loaded automagically
 // @history        8.00 ::: Massive update, if you have a pastebin account, you can use it to track the loot drop you are aiming for.
 // @history        7.32 ::: Fixed syntax issues
 // @history        7.31 ::: Fixed syntax issues and changed rand to 1-6
@@ -137,6 +138,10 @@ else if (document.location.href.match(/captcha.php/i))
 else if ((localStorage.DailyRewards === "true") && (document.body.innerHTML.indexOf("<div class=\"dcReminder\">") != -1))
 {
    setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/dc.php?dc_id=" + localStorage.DailyRewardsID;}, 2000);
+}
+else if((localStorage.AutoPlasma === "true") && (document.getElementsByClassName("cauldronRightContainer")[0].getElementsByTagName('a')[0].title.match(/Your cauldron needs/i)))
+{
+	window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&activate=1#cauldronRefillText";}, 1000);
 }
 else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been added to your inventory!") != -1)
 {
@@ -892,7 +897,7 @@ button11.onclick=function(){
 		}
 };
 
-    // Enable Paste to Bin
+// Enable Paste to Bin
 if (!localStorage.BinPaster) {localStorage.BinPaster = false;}
 if (!localStorage.DevApi) {localStorage.DevApi = "";}
 if (!localStorage.Username) {localStorage.Username = "";}
@@ -956,6 +961,35 @@ button12.onclick=function(){
 		alert("Posting to Pastebin ON");
 		titleButton12();
 		}
+};
+
+
+// Auto Load Ghost Plasma to Cauldron.
+if (!localStorage.AutoPlasma) {localStorage.AutoPlasma = false;}
+
+var button13 = document.createElement("button");
+
+function titleButton13() {
+var t13;
+if (localStorage.AutoPlasma === "true") {
+    t13=document.createTextNode("Auto Plasma is On"); }
+else {
+    t13=document.createTextNode("Auto Plasma is Off"); }
+button13.innerHTML = "";
+button13.appendChild(t13);
+}
+titleButton13();
+document.body.appendChild(button13);
+button13.onclick=function(){
+    if (localStorage.AutoPlasma === "true") {
+		localStorage.AutoPlasma = false; 
+		alert("Auto Plasma is now off");
+	}
+    else {
+		localStorage.AutoPlasma = true; 
+		alert("Auto Plasma is now on");
+	}
+	titleButton13();
 };
 
 if (!localStorage.LootChecker) {localStorage.LootChecker = "Not Found";}
