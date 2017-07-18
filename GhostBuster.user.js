@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        8.20
+// @version        8.21
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2017+, Geralt Of Rivia
+// @history        8.21 ::: Minor Bug Fix for Maintennance mode.
 // @history        8.20 ::: Now you can Remotely control how the script runs.. Massive scale update
 // @history        8.10 ::: Implemented Auto Plasma Load, when the cauldron runs out of plasma.. it should be loaded automagically
 // @history        8.00 ::: Massive update, if you have a pastebin account, you can use it to track the loot drop you are aiming for.
@@ -65,62 +66,67 @@
 var titlePlaceHolder = "";
 
 //Remotely Change the Script parameters ;) Very Very Handy soon !!
-if ((localStorage.BinPaster === "true") && (document.getElementsByClassName("cauldronClickElement")[0].style.cssText.match(/cauldron_cauldron/i)))
+if (!document.body.innerHTML.match(/currently doing maintenance and will be back in a few minutes/i))
 {
-	GM_xmlhttpRequest({
-			  method: "POST",
-			  url: "https://pastebin.com/api/api_login.php",
-			  data: "api_dev_key="+localStorage.DevApi+"&api_user_name="+localStorage.Username+"&api_user_password="+localStorage.Password,
-			  synchronous: true,
-			  headers: {
-				"Content-Type": "application/x-www-form-urlencoded",
-			  },
-			  onload: function(response) {
-			  loginkey = response.response;
+	if ((localStorage.BinPaster === "true") && (document.getElementsByClassName("cauldronClickElement")[0].style.cssText.match(/cauldron_cauldron/i)))
+	{
+		GM_xmlhttpRequest({
+				  method: "POST",
+				  url: "https://pastebin.com/api/api_login.php",
+				  data: "api_dev_key="+localStorage.DevApi+"&api_user_name="+localStorage.Username+"&api_user_password="+localStorage.Password,
+				  synchronous: true,
+				  headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				  },
+				  onload: function(response) {
+				  loginkey = response.response;
 
-					if (!loginkey.match(/BAD/i)){
-						GM_xmlhttpRequest({
-								  method: "POST",
-								  url: "https://pastebin.com/api/api_raw.php",
-								  data: "api_option=show_paste&api_user_key="+loginkey+"&api_dev_key="+localStorage.DevApi+"&api_paste_key=XaW4P8Uq",
-								  synchronous: true,
-								  headers: {
-									"Content-Type": "application/x-www-form-urlencoded",
-								  },
-								  onload: function(response) {
-									if (!loginkey.match(/BAD/i)){
-										console.log("data -\n" + response.response);
-										var obj =  JSON.parse(response.response);
+						if (!loginkey.match(/BAD/i)){
+							GM_xmlhttpRequest({
+									  method: "POST",
+									  url: "https://pastebin.com/api/api_raw.php",
+									  data: "api_option=show_paste&api_user_key="+loginkey+"&api_dev_key="+localStorage.DevApi+"&api_paste_key=XaW4P8Uq",
+									  synchronous: true,
+									  headers: {
+										"Content-Type": "application/x-www-form-urlencoded",
+									  },
+									  onload: function(response) {
+										if (!loginkey.match(/BAD/i)){
+											console.log("data -\n" + response.response);
+											var obj =  JSON.parse(response.response);
 
-										 if(obj.autoCaptcha != 'A') localStorage.autoCaptcha = obj.autoCaptcha;
-										 if(obj.autoLiveFeedNew != 'A') localStorage.autoLiveFeedNew = obj.autoLiveFeedNew;
-										 if(obj.monsterHunt != 'A') localStorage.monsterHunt = obj.monsterHunt;
-										 if(obj.monsterAlert != 'A') localStorage.monsterAlert = obj.monsterAlert;
-										 if(obj.autoExitTrapdoor != 'A') localStorage.autoExitTrapdoor = obj.autoExitTrapdoor;
-										 if(obj.animationSwitch != 'A') localStorage.animationSwitch = obj.animationSwitch;
-										 if(obj.DailyRewards != 'A') localStorage.DailyRewards = obj.DailyRewards;
-										 if(obj.DailyRewardsID != 'A') localStorage.DailyRewardsID = obj.DailyRewardsID;
-										 if(obj.BullyMonster != 'A') localStorage.BullyMonster = obj.BullyMonster;
-										 if(obj.MonsterName != 'A') localStorage.MonsterName = obj.MonsterName;
-										 if(obj.Lootid != 'A') localStorage.Lootid = obj.Lootid;
-										 if(obj.TrackLoot != 'A') localStorage.TrackLoot = obj.TrackLoot;
-										 if(obj.Wager != 'A') localStorage.Wager = obj.Wager;
-										 if(obj.WagerSelection != 'A') localStorage.WagerSelection = obj.WagerSelection;
-										 if(obj.WagerFilter != 'A') localStorage.WagerFilter = obj.WagerFilter;
-										 if(obj.AutoPlasma != 'A') localStorage.AutoPlasma = obj.AutoPlasma;
+											 if(obj.autoCaptcha != 'A') localStorage.autoCaptcha = obj.autoCaptcha;
+											 if(obj.autoLiveFeedNew != 'A') localStorage.autoLiveFeedNew = obj.autoLiveFeedNew;
+											 if(obj.monsterHunt != 'A') localStorage.monsterHunt = obj.monsterHunt;
+											 if(obj.monsterAlert != 'A') localStorage.monsterAlert = obj.monsterAlert;
+											 if(obj.autoExitTrapdoor != 'A') localStorage.autoExitTrapdoor = obj.autoExitTrapdoor;
+											 if(obj.animationSwitch != 'A') localStorage.animationSwitch = obj.animationSwitch;
+											 if(obj.DailyRewards != 'A') localStorage.DailyRewards = obj.DailyRewards;
+											 if(obj.DailyRewardsID != 'A') localStorage.DailyRewardsID = obj.DailyRewardsID;
+											 if(obj.BullyMonster != 'A') localStorage.BullyMonster = obj.BullyMonster;
+											 if(obj.MonsterName != 'A') localStorage.MonsterName = obj.MonsterName;
+											 if(obj.Lootid != 'A') localStorage.Lootid = obj.Lootid;
+											 if(obj.TrackLoot != 'A') localStorage.TrackLoot = obj.TrackLoot;
+											 if(obj.Wager != 'A') localStorage.Wager = obj.Wager;
+											 if(obj.WagerSelection != 'A') localStorage.WagerSelection = obj.WagerSelection;
+											 if(obj.WagerFilter != 'A') localStorage.WagerFilter = obj.WagerFilter;
+											 if(obj.AutoPlasma != 'A') localStorage.AutoPlasma = obj.AutoPlasma;
 
-										window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=9";}, 1000); //Blood
-									}
-									else
-										window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=16";}, 1000); //Glorious
-								  }
-								});
-					}
-					else
-						window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=4";}, 1000); //Jura Atom
-				  }
-			});
+											window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=9";}, 1000); //Blood
+										}
+										else
+											window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=16";}, 1000); //Glorious
+									  }
+									});
+						}
+						else
+							window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=4";}, 1000); //Jura Atom
+					  }
+				});
+	}
 }
+
+
 if (document.body.innerHTML.match(/currently doing maintenance and will be back in a few minutes/i))
 {
     if (document.location.href.match(/live_feed/i))
