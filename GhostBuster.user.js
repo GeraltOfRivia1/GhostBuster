@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        8.21
+// @version        8.22
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2017+, Geralt Of Rivia
+// @history        8.22 ::: Switch to default bait when out of bait.
 // @history        8.21 ::: Minor Bug Fix for Maintennance mode.
 // @history        8.20 ::: Now you can Remotely control how the script runs.. Massive scale update
 // @history        8.10 ::: Implemented Auto Plasma Load, when the cauldron runs out of plasma.. it should be loaded automagically
@@ -153,7 +154,7 @@ else if (document.getElementsByName("captcha_id")[0])
 		}*/
 		var dateObj = new Date();
 		var hrs = dateObj.getHours();
-	
+
 		if (hrs >= 23 || hrs <= 4) {
 			localStorage.autoCaptcha = false;
             pasteToBin("Log Update : Sleeping Now","Script Slept at - "+(new Date().toLocaleString()));
@@ -184,9 +185,9 @@ else if (document.getElementsByName("captcha_id")[0])
 else if (document.location.href.match(/captcha.php/i))
 {
     if (document.body.innerHTML.match(/Please click/i)) {
-        
+
         localStorage.huntsTillCaptcha3 = 75;
-        
+
         if (document.getElementById('topHuntSeconds').innerHTML <= 0 && document.getElementById('topHuntMinutes').innerHTML <= 0)
         {
             titlePlaceHolder = "Hunting Now!";
@@ -218,7 +219,7 @@ else if( (localStorage.Wager === "true") && (document.getElementById('wagerConta
 	var checkWager = document.getElementsByClassName('logText')[0].innerHTML;
 	var Wagermatch = new RegExp(localStorage.WagerFilter, 'i');
 	localStorage.WagerLog = true;
-	
+
 	if(localStorage.WagerSelection === "true" && !(checkWager.match(Wagermatch))) {
 		setTimeout(function() {
 			console.log("Close Croupier Button "+new Date().toLocaleString());
@@ -227,12 +228,12 @@ else if( (localStorage.Wager === "true") && (document.getElementById('wagerConta
 	else {
 		var luck = getRandomInt(1,3);
 		localStorage.WagerCounter = parseInt(localStorage.WagerCounter) + 1;
-	
+
 		setTimeout(function() {
 			console.log("Croupier Button "+luck+" "+new Date().toLocaleString());
 		document.getElementById('croupierButton'+luck).click();}, 2000);
 	}
-	
+
 	setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/camp.php";}, 4000);
 }
 else if (document.location.href.match(/bonus_videos/i))
@@ -253,7 +254,7 @@ else if (document.location.href.match(/live_feed/i))
     if (localStorage.autoLiveFeedNew === "true") {
     
     titlePlaceHolder = "✯ Live Feed ✯";
-        
+
     if (document.body.innerHTML.match(/This is causing to much bureaucracy/i) || document.body.innerHTML.match(/You received/i))
     {
         MonsterTimer();
@@ -262,7 +263,7 @@ else if (document.location.href.match(/live_feed/i))
     {
         var link55 = document.getElementById('liveFeedContainer');
         var child = link55.getElementsByTagName('a')[1].href;
-        
+
         if (child.match(/action=assistAll&mons/i))
         {
             titlePlaceHolder = "Killing Monsters! (ง'̀-'́)ง";
@@ -270,14 +271,14 @@ else if (document.location.href.match(/live_feed/i))
         }
         else { MonsterTimer(); }
     }
-        
+
     } else { titlePlaceHolder = " ";}
 }
 else if ( localStorage.autoExitTrapdoor === "true" && (document.location.href.match(/camp.php/i) || document.location.href.match(/hunt.php/i)) && document.getElementsByClassName("trapdoorInterval")[0].innerHTML !== "")
 {
     titlePlaceHolder = "Leaving Trapdoor" ;
     window.setTimeout(function() {document.getElementsByClassName('trapdoorLeaveButton')[0].click();}, 500);
-    
+
     if (localStorage.huntsTillCaptcha3) {localStorage.huntsTillCaptcha3 = Number(localStorage.huntsTillCaptcha3) + 1;}
 }
 else
@@ -285,11 +286,13 @@ else
 	var huntLink = document.getElementById('topHuntActive').firstElementChild.href;
     var drinkCount = document.getElementById('profile_whisky_quantity').textContent;
 	localStorage.WagerLog = false;
-    
+
     if (drinkCount <= 6)
     {
         titlePlaceHolder = "REFILL! Low Potions";
-        setTimeout(function() {alert("Yikes, you are short on bait!");}, 12500);
+        //setTimeout(function() {alert("Yikes, you are short on bait!");}, 12500);
+	pasteToBin("Log Update : Out of Bait","Out of Bait Changing to Default Bait (Devil Driver) - ");
+	setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=whisky&arm=25";}, 3000);
 	}
 	else if (huntLink != -1)
 	{
@@ -305,7 +308,7 @@ else
 			minutesid = 0;
 			secondsid = 0;
 		}
-			
+
 		var minutes = parseInt(minutesid, 10);
 		var seconds = parseInt(secondsid, 10);
 		var buf_sec = getRandomInt(1,6);
