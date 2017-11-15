@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        8.22
+// @version        8.23
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2017+, Geralt Of Rivia
+// @history        8.23 ::: Auto Video Watcher Functioning changed. the web-page doesn't count seconds correctly. added a buffer.
 // @history        8.22 ::: Switch to default bait when out of bait.
 // @history        8.21 ::: Minor Bug Fix for Maintennance mode.
 // @history        8.20 ::: Now you can Remotely control how the script runs.. Massive scale update
@@ -242,7 +243,7 @@ if(document.getElementById('videoMessage').textContent.match(/Earn one chrono/i)
 	{
 		var vid_mins = getRandomInt(1,5);
 		window.setTimeout(function() {document.getElementById('nextVideoButton').click();}, vid_mins*1000);
-		setTimeout(function(){ location.reload(); }, (25000 + vid_mins*1000));
+		setTimeout(function(){ location.reload(); }, (25000 + vid_mins*1500));
 	}
 else
 	{
