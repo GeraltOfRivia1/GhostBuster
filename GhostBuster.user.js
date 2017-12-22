@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        8.23
+// @version        8.24
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2017+, Geralt Of Rivia
+// @history        8.24 ::: When a loot drops, sending the caught text to the pastebin.
 // @history        8.23 ::: Auto Video Watcher Functioning changed. the web-page doesn't count seconds correctly. added a buffer.
 // @history        8.22 ::: Switch to default bait when out of bait.
 // @history        8.21 ::: Minor Bug Fix for Maintennance mode.
@@ -322,7 +323,7 @@ else
 			var LootMatch = new RegExp(localStorage.Lootid, 'i');
 
 			if ((localStorage.TrackLoot === "true") && (checkMonster.match(LootMatch))){
-                pasteToBin("Log Update : Found Loot",localStorage.Lootid + " Found - " + new Date().toLocaleString());
+                pasteToBin("Log Update : Found Loot",checkMonster);
 				localStorage.LootChecker = localStorage.Lootid + " Found - " + new Date().toLocaleString();
 			}
 			
