@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        8.24
+// @version        9.00
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -17,7 +17,8 @@
 // @require        https://raw.githubusercontent.com/GeraltOfRivia1/GhostBuster/master/tesseract.js
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
-// @copyright      2017+, Geralt Of Rivia
+// @copyright      2018+, Geralt Of Rivia
+// @history        9.00 ::: Auto Boost Request when available.
 // @history        8.24 ::: When a loot drops, sending the caught text to the pastebin.
 // @history        8.23 ::: Auto Video Watcher Functioning changed. the web-page doesn't count seconds correctly. added a buffer.
 // @history        8.22 ::: Switch to default bait when out of bait.
@@ -114,6 +115,7 @@ if (!document.body.innerHTML.match(/currently doing maintenance and will be back
 											 if(obj.WagerSelection != 'A') localStorage.WagerSelection = obj.WagerSelection;
 											 if(obj.WagerFilter != 'A') localStorage.WagerFilter = obj.WagerFilter;
 											 if(obj.AutoPlasma != 'A') localStorage.AutoPlasma = obj.AutoPlasma;
+											 if(obj.AutoBoost != 'A') localStorage.AutoBoost = obj.AutoBoost;
 
 											window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=9";}, 1000); //Blood
 										}
@@ -209,6 +211,11 @@ else if ((localStorage.DailyRewards === "true") && (document.body.innerHTML.inde
 else if((localStorage.AutoPlasma === "true") && (document.getElementsByClassName("cauldronRightContainer")[0].getElementsByTagName('a')[0].title.match(/Your cauldron needs/i)))
 {
 	window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&activate=1#cauldronRefillText";}, 1000);
+}
+else if((localStorage.AutoBoost === "true") && (document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[0].title.match(/Request help to boost your/i)))
+{
+	document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[0].click();
+	document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[1].click();
 }
 else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been added to your inventory!") != -1)
 {
@@ -1060,6 +1067,35 @@ button13.onclick=function(){
 	}
 	titleButton13();
 };
+
+// Auto Boost
+if (!localStorage.AutoBoost) {localStorage.AutoBoost = false;}
+
+var button14 = document.createElement("button");
+
+function titleButton14() {
+var t14;
+if (localStorage.AutoBoost === "true") {
+    t14=document.createTextNode("Auto Boost is On"); }
+else {
+    t14=document.createTextNode("Auto Boost is Off"); }
+button14.innerHTML = "";
+button14.appendChild(t14);
+}
+titleButton14();
+document.body.appendChild(button14);
+button14.onclick=function(){
+    if (localStorage.AutoBoost === "true") {
+		localStorage.AutoBoost = false; 
+		alert("Auto Boost is now off");
+	}
+    else {
+		localStorage.AutoBoost = true; 
+		alert("Auto Boost is now on");
+	}
+	titleButton14();
+};
+
 
 if (!localStorage.LootChecker) {localStorage.LootChecker = "Not Found";}
 if (!localStorage.Monstercounter) {localStorage.Monstercounter = 0;}
