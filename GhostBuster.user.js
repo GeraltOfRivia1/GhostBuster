@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        9.00
+// @version        9.01
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2018+, Geralt Of Rivia
+// @history        9.01 ::: Auto Boost Request broke the script if it runs anywhere other than camp. fixed it now.
 // @history        9.00 ::: Auto Boost Request when available.
 // @history        8.24 ::: When a loot drops, sending the caught text to the pastebin.
 // @history        8.23 ::: Auto Video Watcher Functioning changed. the web-page doesn't count seconds correctly. added a buffer.
@@ -68,6 +69,7 @@
 
 
 var titlePlaceHolder = "";
+var boost_need = document.getElementsByClassName("trapWallpostContainer");
 
 //Remotely Change the Script parameters ;) Very Very Handy soon !!
 if (!document.body.innerHTML.match(/currently doing maintenance and will be back in a few minutes/i))
@@ -212,7 +214,7 @@ else if((localStorage.AutoPlasma === "true") && (document.getElementsByClassName
 {
 	window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&activate=1#cauldronRefillText";}, 1000);
 }
-else if((localStorage.AutoBoost === "true") && (document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[0].title.match(/Request help to boost your/i)))
+else if ((localStorage.AutoBoost === "true") && (boost_need.length > 0) && (boost_need[0].getElementsByClassName("boostLink ")[0].title.match(/Request help to boost your/i)))
 {
 	document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[0].click();
 	document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[1].click();
