@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        9.02
+// @version        9.03
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2018+, Geralt Of Rivia
+// @history        9.03 ::: Made a boo-boo so fixed a boo-boo
 // @history        9.02 ::: Script stops after Auto Boost, Now refreshes the page
 // @history        9.01 ::: Auto Boost Request broke the script if it runs anywhere other than camp. fixed it now.
 // @history        9.00 ::: Auto Boost Request when available.
@@ -217,9 +218,9 @@ else if((localStorage.AutoPlasma === "true") && (document.getElementsByClassName
 }
 else if ((localStorage.AutoBoost === "true") && (boost_need.length > 0) && (boost_need[0].getElementsByClassName("boostLink ")[0].title.match(/Request help to boost your/i)))
 {
-	document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[0].click();
-	document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[1].click();
-	document.location = "http://www.ghost-trappers.com/fb/camp.php";}, 1000);
+	setTimeout(function() {document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[0].click();}, 1000);
+	setTimeout(function() {document.getElementsByClassName("trapWallpostContainer")[0].getElementsByClassName("boostLink ")[1].click();}, 2000);
+	setTimeout(function() {document.location = "http://www.ghost-trappers.com/fb/camp.php";}, 5000);
 }
 else if (document.body.innerHTML.indexOf("Congratulations! Your reward has been added to your inventory!") != -1)
 {
