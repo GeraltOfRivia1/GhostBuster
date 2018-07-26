@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        9.03
+// @version        10.00
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2018+, Geralt Of Rivia
+// @history        10.00 ::: Feature Baseline, Summoning Script Autoload is here.. But is in Beta Testing.. Soon
 // @history        9.03 ::: Made a boo-boo so fixed a boo-boo
 // @history        9.02 ::: Script stops after Auto Boost, Now refreshes the page
 // @history        9.01 ::: Auto Boost Request broke the script if it runs anywhere other than camp. fixed it now.
@@ -263,10 +264,115 @@ else
 		alert("Feeling Cheeky are we ? Try again tomorrow");
 	}
 }
+else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.match(/eleventh_floor.php/i)))
+{
+	var Slot1_scroll = -1;
+	var Slot2_scroll = -1;
+	var Slot3_scroll = -1;
+	var scroll_int = parseInt(0);
+
+	//var dateObj = new Date();
+	//var hrs = dateObj.getHours();
+
+	//if ((AutoLoadScroll === "true") && (hrs < 22)) //&& on eleventh page
+	if (parseInt(localStorage.Cleanup_cou) === parseInt(0))
+	{
+		//assuming that if i am here the slots are empty
+		var Slot = document.getElementById("glyphSelect1");
+		if (Slot && Slot1_scroll > 0)
+		{
+			for (var i = 0; i < document.getElementById("glyphSelect1").length; ++i)
+			{
+				if (Slot1_scroll === parseInt(document.getElementById("glyphSelect1").options[i].value))
+				{
+					Slot.value = Slot1_scroll;
+					document.getElementsByClassName('buttonActivate')[0].click();
+					document.getElementById("popupButtonActivateGlyph").click();
+					break;
+				}
+
+			}
+		}
+
+		Slot = document.getElementById("glyphSelect2");
+		if (Slot && Slot2_scroll > 0)
+		{
+			for (var i = 0; i < document.getElementById("glyphSelect2").length; ++i)
+			{
+				if (Slot2_scroll === parseInt(document.getElementById("glyphSelect2").options[i].value))
+				{
+					Slot.value = Slot2_scroll;
+					document.getElementsByClassName('buttonActivate')[0].click();
+					document.getElementById("popupButtonActivateGlyph").click();
+					break;
+				}
+
+			}
+		}
+
+		Slot = document.getElementById("glyphSelect3");
+		if (Slot && Slot3_scroll > 0)
+		{
+			for (var i = 0; i < document.getElementById("glyphSelect3").length; ++i)
+			{
+				if (Slot3_scroll === parseInt(document.getElementById("glyphSelect3").options[i].value))
+				{
+					Slot.value = Slot3_scroll;
+					document.getElementsByClassName('buttonActivate')[0].click();
+					document.getElementById("popupButtonActivateGlyph").click();
+					break;
+				}
+
+			}
+		}
+	}
+
+	//Let's See if there is a timer running on one of the scrolls
+	var isTimerAvail = document.getElementsByClassName('timerText');
+	//yes ?
+	if (isTimerAvail.length > 0)
+	{
+		//For Each Slot, lets check if we remove or wait
+        //Same get the timer
+        isTimerAvail = document.getElementsByClassName('timerText');
+        if (isTimerAvail.length > 0)
+        {
+            var Scroll_Timer = isTimerAvail[0].innerHTML;
+            //has the scroll run out of time ?
+            if (Scroll_Timer.match(/time is over/i))
+            {
+                //remove it
+                localStorage.Cleanup_cou = parseInt(localStorage.Cleanup_cou) + parseInt(1);
+                console.log(localStorage.Cleanup_cou);
+                document.getElementsByClassName('buttonRemove')[0].click();
+            }
+            else //no?
+            {
+                //Check the remaining time on the scroll
+                var coder_time = Scroll_Timer.split(" ",5);
+                scroll_int = parseInt(coder_time[1]);
+                if (coder_time.length > 3)
+                {
+                    scroll_int = parseInt(coder_time[0]) * 60 + parseInt(coder_time[2]);
+                }
+                console.log(scroll_int);
+                //Stop and Wait
+                //break;
+            }
+        }
+		//Should I wait or just move on ?
+		window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/eleventh_floor.php";},  ((scroll_int+1) * 60 * 1000));
+	}
+	if (parseInt(localStorage.Cleanup_cou) > parseInt(0))
+    {
+        localStorage.Cleanup_cou = parseInt(0);
+        window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/eleventh_floor.php";}, 1000);
+    }
+}
 else if (document.location.href.match(/live_feed/i))
 {
     if (localStorage.autoLiveFeedNew === "true") {
-    
+
     titlePlaceHolder = "✯ Live Feed ✯";
 
     if (document.body.innerHTML.match(/This is causing to much bureaucracy/i) || document.body.innerHTML.match(/You received/i))
@@ -316,7 +422,7 @@ else
 		{
 			minutesid = document.getElementById('topHuntMinutes').innerHTML;
 			secondsid = document.getElementById('topHuntSeconds').innerHTML;
-		} 
+		}
 		else if (document.getElementById('topHuntMinutes') === null)
 		{
 			minutesid = 0;
@@ -338,24 +444,24 @@ else
                 pasteToBin("Log Update : Found Loot",checkMonster);
 				localStorage.LootChecker = localStorage.Lootid + " Found - " + new Date().toLocaleString();
 			}
-			
+
 		    if (checkMonster.match(/is too strong for you alone/i))
 			{
 				var monstermatch = new RegExp(localStorage.MonsterName, 'i');
 				var LogPage = document.getElementsByClassName('logImage')[0].getElementsByTagName('a')[0].href;
-				
+
 				//Check if bullying is turned ON, then if this is not the right monster, kick it
 				if(localStorage.BullyMonster === "true" && !(checkMonster.match(monstermatch))) {
 					if(localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML){
 						//To avoid detection we get the rand id and then click release
-						setTimeout(function() {localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML; 
-												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster';}, 
+						setTimeout(function() {localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
+												document.location = 'http://www.ghost-trappers.com/fb/ghost_monster.php?action=releaseActiveMonster';},
 												getRandomInt(1000, 3000));
 					}
 				}
 				//if we are not bullying monsters or it's the monster we want, post it
 				else {
-				
+
 					if (localStorage.monsterAlert === "true" && localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML) {
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
 												alert("You got a monster, you might want to send it to live feed (or remove it " + "with irrelevance).\n\nGood luck!");}, 500);
@@ -363,7 +469,7 @@ else
 					if (localStorage.monsterHunt === "true" && localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML) {
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
 												localStorage.Monstercounter = parseInt(localStorage.Monstercounter) + 1;
-												document.getElementsByClassName('logPost')[0].getElementsByTagName('a')[0].click()  ;}, 
+												document.getElementsByClassName('logPost')[0].getElementsByTagName('a')[0].click()  ;},
 												getRandomInt(1000, 3000));
 					}
 				}
@@ -384,7 +490,7 @@ else
 	{
 		var numMins = getRandomInt(4,8);
 		titlePlaceHolder = "Something's up, Refreshing in random minutes";
-		setTimeout(function() {document.location = 'http://www.ghost-trappers.com/fb/camp.php';}, 
+		setTimeout(function() {document.location = 'http://www.ghost-trappers.com/fb/camp.php';},
 		numMins*60*1000);
     }
 }
@@ -395,36 +501,36 @@ function UpdateTitle(buff)
 	if (titlePlaceHolder === "")
     {
         var minutesid, secondsid, mins, secs;
-        
+
 		if (document.getElementById('topHuntMinutes') !== null)
 		{
 			minutesid = document.getElementById('topHuntMinutes').innerHTML;
 			secondsid = document.getElementById('topHuntSeconds').innerHTML;
-		} 
+		}
 		else if (document.getElementById('topHuntMinutes') === null)
 		{
 			minutesid = '0';
 			secondsid = '0';
 		}
-		
+
 		if (minutesid === "00" && secondsid === "00")
 		{
 			buff =  parseInt(buff) - 1;
 		}
-		
+
         mins = parseInt(minutesid, 10);
 		secs = parseInt(secondsid, 10) + parseInt(buff);
-		
+
 		if (mins < 10)
 		{mins = "0" + mins;}
 		if (secs < 10)
 		{secs = "0" + secs;}
-        
+
         if (mins === "00" && secs === "00")
         {document.title = "Hunting Now!";}
 		else
         {document.title = "Hunting in " + mins + ':' + secs;}
-        
+
         if (localStorage.animationSwitch === "true"){
         if (mins === '00' && secondsid % 60 === 29) {document.title = document.title + " " + " (, 00)";}
         else if (mins === '00' && secondsid % 60 === 28) {document.title = document.title + " " + "   (, 00)";}
@@ -711,9 +817,9 @@ button03.appendChild(t);
 titleButton03();
 document.body.appendChild(button03);
 button03.onclick=function(){
-    
+
     var selection = prompt("Type autohunt to enable Monster Auto-Hunt\n\nType alert to enable Monster Alert\n\nType neither to Disable Monster help", "autohunt");
-    
+
     if (selection === "alert") {
         localStorage.monsterHunt = false;
         localStorage.monsterAlert = true;
@@ -722,7 +828,7 @@ button03.onclick=function(){
     else if (selection === "autohunt") {
         localStorage.monsterHunt = true;
         localStorage.monsterAlert = false;
-        alert("Automatic Monster Hunt is now Enabled.\n\nWhen a monster is encounterd on first log it will be automatically released to Live feed.\n\nIf you spam" + 
+        alert("Automatic Monster Hunt is now Enabled.\n\nWhen a monster is encounterd on first log it will be automatically released to Live feed.\n\nIf you spam" +
              " the chrono charge button then it won't work.");
         titleButton03();}
     else {
@@ -1063,11 +1169,11 @@ titleButton13();
 document.body.appendChild(button13);
 button13.onclick=function(){
     if (localStorage.AutoPlasma === "true") {
-		localStorage.AutoPlasma = false; 
+		localStorage.AutoPlasma = false;
 		alert("Auto Plasma is now off");
 	}
     else {
-		localStorage.AutoPlasma = true; 
+		localStorage.AutoPlasma = true;
 		alert("Auto Plasma is now on");
 	}
 	titleButton13();
@@ -1091,14 +1197,43 @@ titleButton14();
 document.body.appendChild(button14);
 button14.onclick=function(){
     if (localStorage.AutoBoost === "true") {
-		localStorage.AutoBoost = false; 
+		localStorage.AutoBoost = false;
 		alert("Auto Boost is now off");
 	}
     else {
-		localStorage.AutoBoost = true; 
+		localStorage.AutoBoost = true;
 		alert("Auto Boost is now on");
 	}
 	titleButton14();
+};
+
+// Summoning
+if (!localStorage.AutoLoadScroll) {localStorage.AutoLoadScroll = false;}
+if (!localStorage.Cleanup_cou) {localStorage.Cleanup_cou = parseInt(0);}
+
+var button15 = document.createElement("button");
+
+function titleButton15() {
+var t15;
+if (localStorage.AutoLoadScroll === "true") {
+    t15=document.createTextNode("Auto Scroll is On"); }
+else {
+    t15=document.createTextNode("Auto Scroll is Off"); }
+button15.innerHTML = "";
+button15.appendChild(t15);
+}
+titleButton15();
+document.body.appendChild(button15);
+button15.onclick=function(){
+    if (localStorage.AutoLoadScroll === "true") {
+		localStorage.AutoLoadScroll = false;
+		alert("Auto Scroll is now off");
+	}
+    else {
+		localStorage.AutoLoadScroll = true;
+		alert("Auto Scroll is now on");
+	}
+	titleButton15();
 };
 
 
@@ -1182,10 +1317,10 @@ node1.style.paddingBottom = "5px";
 
 
 } else {
-    
+
     var aRandomDIV = document.createElement("DIV");
     aRandomDIV.innerHTML = "<br><p style='color:white;font-size:12px;'>Your browser " +
         "does not support Web Storage. Script functions will not work properly or in a complete manner.</p>";
     document.body.appendChild(aRandomDIV);
-    
+
 }
