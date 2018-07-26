@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        10.00
+// @version        10.01
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -273,7 +273,7 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 	//24 - Olympics glyph	
 	//26 - Diamond glyph	
 
-	var Slot1_glyph = localStorage.Glyph_ID;
+	var Slot1_glyph = parseInt(localStorage.Glyph_ID);
 	var scroll_int = parseInt(0);
 
 	//var dateObj = new Date();
@@ -328,7 +328,7 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 				Slot.value = Slot1_glyph;
 				document.getElementsByClassName('buttonActivate')[0].click();
 				document.getElementById("popupButtonActivateGlyph").click();
-				break;
+				break;//I believe at this point the whole page will refresh ? needs to be tested
 			}
 
 		}
