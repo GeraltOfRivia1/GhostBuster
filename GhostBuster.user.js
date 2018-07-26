@@ -121,6 +121,8 @@ if (!document.body.innerHTML.match(/currently doing maintenance and will be back
 											 if(obj.WagerFilter != 'A') localStorage.WagerFilter = obj.WagerFilter;
 											 if(obj.AutoPlasma != 'A') localStorage.AutoPlasma = obj.AutoPlasma;
 											 if(obj.AutoBoost != 'A') localStorage.AutoBoost = obj.AutoBoost;
+											 if(obj.AutoPlasma != 'A') localStorage.AutoLoadScroll = obj.AutoLoadScroll;
+											 if(obj.AutoBoost != 'A') localStorage.Glyph_ID = obj.Glyph_ID;
 
 											window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=9";}, 1000); //Blood
 										}
@@ -266,66 +268,16 @@ else
 }
 else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.match(/eleventh_floor.php/i)))
 {
-	var Slot1_scroll = -1;
-	var Slot2_scroll = -1;
-	var Slot3_scroll = -1;
+	//1 - Egyptian glyph	
+	//16 - Oddball glyph	
+	//24 - Olympics glyph	
+	//26 - Diamond glyph	
+
+	var Slot1_glyph = localStorage.Glyph_ID;
 	var scroll_int = parseInt(0);
 
 	//var dateObj = new Date();
 	//var hrs = dateObj.getHours();
-
-	//if ((AutoLoadScroll === "true") && (hrs < 22)) //&& on eleventh page
-	if (parseInt(localStorage.Cleanup_cou) === parseInt(0))
-	{
-		//assuming that if i am here the slots are empty
-		var Slot = document.getElementById("glyphSelect1");
-		if (Slot && Slot1_scroll > 0)
-		{
-			for (var i = 0; i < document.getElementById("glyphSelect1").length; ++i)
-			{
-				if (Slot1_scroll === parseInt(document.getElementById("glyphSelect1").options[i].value))
-				{
-					Slot.value = Slot1_scroll;
-					document.getElementsByClassName('buttonActivate')[0].click();
-					document.getElementById("popupButtonActivateGlyph").click();
-					break;
-				}
-
-			}
-		}
-
-		Slot = document.getElementById("glyphSelect2");
-		if (Slot && Slot2_scroll > 0)
-		{
-			for (var i = 0; i < document.getElementById("glyphSelect2").length; ++i)
-			{
-				if (Slot2_scroll === parseInt(document.getElementById("glyphSelect2").options[i].value))
-				{
-					Slot.value = Slot2_scroll;
-					document.getElementsByClassName('buttonActivate')[0].click();
-					document.getElementById("popupButtonActivateGlyph").click();
-					break;
-				}
-
-			}
-		}
-
-		Slot = document.getElementById("glyphSelect3");
-		if (Slot && Slot3_scroll > 0)
-		{
-			for (var i = 0; i < document.getElementById("glyphSelect3").length; ++i)
-			{
-				if (Slot3_scroll === parseInt(document.getElementById("glyphSelect3").options[i].value))
-				{
-					Slot.value = Slot3_scroll;
-					document.getElementsByClassName('buttonActivate')[0].click();
-					document.getElementById("popupButtonActivateGlyph").click();
-					break;
-				}
-
-			}
-		}
-	}
 
 	//Let's See if there is a timer running on one of the scrolls
 	var isTimerAvail = document.getElementsByClassName('timerText');
@@ -342,8 +294,6 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
             if (Scroll_Timer.match(/time is over/i))
             {
                 //remove it
-                localStorage.Cleanup_cou = parseInt(localStorage.Cleanup_cou) + parseInt(1);
-                console.log(localStorage.Cleanup_cou);
                 document.getElementsByClassName('buttonRemove')[0].click();
             }
             else //no?
@@ -363,11 +313,32 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 		//Should I wait or just move on ?
 		window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/eleventh_floor.php";},  ((scroll_int+1) * 60 * 1000));
 	}
-	if (parseInt(localStorage.Cleanup_cou) > parseInt(0))
-    {
-        localStorage.Cleanup_cou = parseInt(0);
-        window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/eleventh_floor.php";}, 1000);
-    }
+
+	//Glyphs removed or No Glyphs to wait on ! Lets Load
+
+	//if ((AutoLoadScroll === "true") && (hrs < 22)) //&& on eleventh page
+	//assuming that if i am here the slots are empty
+	var Slot = document.getElementById("glyphSelect1");
+	if (Slot && Slot1_glyph > 0)
+	{
+		for (var i = 0; i < document.getElementById("glyphSelect1").length; ++i)
+		{
+			if (Slot1_glyph === parseInt(document.getElementById("glyphSelect1").options[i].value))
+			{
+				Slot.value = Slot1_glyph;
+				document.getElementsByClassName('buttonActivate')[0].click();
+				document.getElementById("popupButtonActivateGlyph").click();
+				break;
+			}
+
+		}
+
+		if(!document.getElementById("glyphName"))
+		{
+			alert("Out of Glyphs");
+		}
+	}
+
 }
 else if (document.location.href.match(/live_feed/i))
 {
@@ -1209,6 +1180,7 @@ button14.onclick=function(){
 
 // Summoning
 if (!localStorage.AutoLoadScroll) {localStorage.AutoLoadScroll = false;}
+if (!localStorage.Glyph_ID) {localStorage.Glyph_ID =  parseInt(-1);}
 if (!localStorage.Cleanup_cou) {localStorage.Cleanup_cou = parseInt(0);}
 
 var button15 = document.createElement("button");
@@ -1225,15 +1197,19 @@ button15.appendChild(t15);
 titleButton15();
 document.body.appendChild(button15);
 button15.onclick=function(){
-    if (localStorage.AutoLoadScroll === "true") {
-		localStorage.AutoLoadScroll = false;
-		alert("Auto Scroll is now off");
-	}
+
+    var selection1 = prompt("Type the Glyph ID to start loading it automatically or Blank to disable", localStorage.Glyph_ID);
+
+    if (selection1 === "" || selection1 === null || selection1 === 0 ){
+        localStorage.AutoLoadScroll = false;
+        alert("Auto Scroll has been Disabled");
+        titleButton15();}
     else {
-		localStorage.AutoLoadScroll = true;
-		alert("Auto Scroll is now on");
-	}
-	titleButton15();
+        localStorage.AutoLoadScroll = true;
+		localStorage.Glyph_ID = selection1;
+        alert("Auto Scroll Glyph ID is - "+selection1+" , Auto Scroll Load has been enabled");
+        titleButton15();}
+
 };
 
 
