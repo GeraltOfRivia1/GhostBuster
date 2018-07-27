@@ -88,7 +88,7 @@ if (!document.body.innerHTML.match(/currently doing maintenance and will be back
 					"Content-Type": "application/x-www-form-urlencoded",
 				  },
 				  onload: function(response) {
-				  loginkey = response.response;
+				  var loginkey = response.response;
 
 						if (!loginkey.match(/BAD/i)){
 							GM_xmlhttpRequest({
@@ -102,7 +102,7 @@ if (!document.body.innerHTML.match(/currently doing maintenance and will be back
 									  onload: function(response) {
 										if (!loginkey.match(/BAD/i)){
 											console.log("data -\n" + response.response);
-											var obj =  JSON.parse(response.response);
+											var obj = JSON.parse(response.response);
 
 											 if(obj.autoCaptcha != 'A') localStorage.autoCaptcha = obj.autoCaptcha;
 											 if(obj.autoLiveFeedNew != 'A') localStorage.autoLiveFeedNew = obj.autoLiveFeedNew;
@@ -127,12 +127,16 @@ if (!document.body.innerHTML.match(/currently doing maintenance and will be back
 											window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=9";}, 1000); //Blood
 										}
 										else
+										{
 											window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=16";}, 1000); //Glorious
+										}
 									  }
 									});
 						}
 						else
+						{
 							window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/setup.php?type=cauldron&arm=4";}, 1000); //Jura Atom
+						}
 					  }
 				});
 	}
@@ -268,16 +272,27 @@ else
 }
 else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.match(/eleventh_floor.php/i)))
 {
-	//1 - Egyptian glyph	
-	//16 - Oddball glyph	
-	//24 - Olympics glyph	
-	//26 - Diamond glyph	
+	//1 - Egyptian glyph
+	//16 - Oddball glyph
+	//24 - Olympics glyph
+	//26 - Diamond glyph
 
 	var Slot1_glyph = parseInt(localStorage.Glyph_ID);
 	var scroll_int = parseInt(0);
 
 	//var dateObj = new Date();
 	//var hrs = dateObj.getHours();
+
+	var load_Attune = new XMLHttpRequest();
+	var load_Ritual = new XMLHttpRequest(); 
+
+	//Make Sure Always Slot 1 is Attunement Setup.. I Mean Always
+	load_Attune.open("GET","http://www.ghost-trappers.com/fb/camp.php?action=armSetup&slot=0",true);
+	//And Slot 2 is Ritual Setup.. I Mean Always
+	load_Ritual.open("GET","http://www.ghost-trappers.com/fb/camp.php?action=armSetup&slot=1",true);
+
+	//Load the Attunement setup
+    load_Attune.send();
 
 	//Let's See if there is a timer running on one of the scrolls
 	var isTimerAvail = document.getElementsByClassName('timerText');
@@ -311,7 +326,7 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
             }
         }
 		//Should I wait or just move on ?
-		window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/eleventh_floor.php";},  ((scroll_int+1) * 60 * 1000));
+		window.setTimeout(function() {window.location.href = "http://www.ghost-trappers.com/fb/eleventh_floor.php";}, ((scroll_int+1) * 60 * 1000));
 	}
 
 	//Glyphs removed or No Glyphs to wait on ! Lets Load
@@ -326,6 +341,8 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 			if (Slot1_glyph === parseInt(document.getElementById("glyphSelect1").options[i].value))
 			{
 				Slot.value = Slot1_glyph;
+				//Change the Setup to get maximum Glyph time
+				load_Ritual.send();
 				document.getElementsByClassName('buttonActivate')[0].click();
 				document.getElementById("popupButtonActivateGlyph").click();
 				break;//I believe at this point the whole page will refresh ? needs to be tested
@@ -435,12 +452,12 @@ else
 
 					if (localStorage.monsterAlert === "true" && localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML) {
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
-												alert("You got a monster, you might want to send it to live feed (or remove it " + "with irrelevance).\n\nGood luck!");}, 500);
+												alert("You got a monster, you might want to send it to live feed (or remove it with irrelevance).\n\nGood luck!");}, 500);
 					}
 					if (localStorage.monsterHunt === "true" && localStorage.lastMonsterLog !== document.getElementsByClassName('logText')[0].innerHTML) {
 						setTimeout(function(){	localStorage.lastMonsterLog = document.getElementsByClassName('logText')[0].innerHTML;
 												localStorage.Monstercounter = parseInt(localStorage.Monstercounter) + 1;
-												document.getElementsByClassName('logPost')[0].getElementsByTagName('a')[0].click()  ;},
+												document.getElementsByClassName('logPost')[0].getElementsByTagName('a')[0].click();},
 												getRandomInt(1000, 3000));
 					}
 				}
@@ -486,7 +503,7 @@ function UpdateTitle(buff)
 
 		if (minutesid === "00" && secondsid === "00")
 		{
-			buff =  parseInt(buff) - 1;
+			buff = parseInt(buff) - 1;
 		}
 
         mins = parseInt(minutesid, 10);
@@ -584,7 +601,7 @@ function pasteToBin(title, message){
 			"Content-Type": "application/x-www-form-urlencoded",
 		  },
 		  onload: function(response) {
-			loginkey = response.response;
+			var loginkey = response.response;
 			if (!loginkey.match(/BAD/i)){
 				GM_xmlhttpRequest({
 						  method: "POST",
@@ -1092,7 +1109,9 @@ button12.onclick=function(){
 			return;
 		}
 		else
+		{
 			localStorage.DevApi = BinData;
+		}
 
 		BinData = prompt("Enter PasteBin Username", localStorage.Username);
 
@@ -1102,7 +1121,9 @@ button12.onclick=function(){
 			return;
 		}
 		else
+		{
 			localStorage.Username = BinData;
+		}
 
 		BinData = prompt("Enter PasteBin Password", localStorage.Password);
 
@@ -1112,7 +1133,9 @@ button12.onclick=function(){
 			return;
 		}
 		else
+		{
 			localStorage.Password = BinData;
+		}
 
 		localStorage.BinPaster = true;
 
@@ -1180,7 +1203,7 @@ button14.onclick=function(){
 
 // Summoning
 if (!localStorage.AutoLoadScroll) {localStorage.AutoLoadScroll = false;}
-if (!localStorage.Glyph_ID) {localStorage.Glyph_ID =  parseInt(-1);}
+if (!localStorage.Glyph_ID) {localStorage.Glyph_ID = parseInt(-1);}
 if (!localStorage.Cleanup_cou) {localStorage.Cleanup_cou = parseInt(0);}
 
 var button15 = document.createElement("button");
@@ -1224,7 +1247,7 @@ if (!localStorage.WakeTime) {localStorage.WakeTime = "";}
 var node0= document.createElement("P");
 var textnode, textnode1, linebreak;
 
-textnode0 = document.createTextNode("Trackers / Counters -");
+var textnode0 = document.createTextNode("Trackers / Counters -");
 linebreak = document.createElement('br');
 node0.appendChild(textnode0);
 node0.appendChild(linebreak);
