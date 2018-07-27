@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        10.01
+// @version        10.02
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,8 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2018+, Geralt Of Rivia
+// @history        10.02 ::: Added a mechanism to change the setup before and after loading the Glyphs
+// @history        10.01 ::: Autoloading Glyph.. Id from the User instead of hard coding in the script
 // @history        10.00 ::: Feature Baseline, Summoning Script Autoload is here.. But is in Beta Testing.. Soon
 // @history        9.03 ::: Made a boo-boo so fixed a boo-boo
 // @history        9.02 ::: Script stops after Auto Boost, Now refreshes the page
