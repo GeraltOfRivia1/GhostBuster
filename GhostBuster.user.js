@@ -2,7 +2,7 @@
 // @name           GhostBuster
 // @author         GeraltOfRivia
 // @namespace      Original versions by GTDevsSuck, Jaryl & iispyderii
-// @version        10.02
+// @version        10.03
 // @description    A GhostBuster utility belt for GhostTrappers FB Game.
 // @include        http*://www.ghost-trappers.com/fb/*
 // @include        http*://gt-1.diviad.com/fb/*
@@ -18,6 +18,7 @@
 // @updateURL      https://github.com/GeraltOfRivia1/GhostBuster/raw/master/GhostBuster.user.js
 // @grant          GM_xmlhttpRequest
 // @copyright      2018+, Geralt Of Rivia
+// @history        10.03 ::: Reverted some Changes to make it work again
 // @history        10.02 ::: Added a mechanism to change the setup before and after loading the Glyphs
 // @history        10.01 ::: Autoloading Glyph.. Id from the User instead of hard coding in the script
 // @history        10.00 ::: Feature Baseline, Summoning Script Autoload is here.. But is in Beta Testing.. Soon
@@ -286,14 +287,10 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 	//var hrs = dateObj.getHours();
 
 	var load_Attune = new XMLHttpRequest();
-	var load_Ritual = new XMLHttpRequest(); 
+	var load_Ritual = new XMLHttpRequest();
 
 	//Make Sure Always Slot 1 is Attunement Setup.. I Mean Always
 	load_Attune.open("GET","http://www.ghost-trappers.com/fb/camp.php?action=armSetup&slot=0",true);
-	//And Slot 2 is Ritual Setup.. I Mean Always
-	load_Ritual.open("GET","http://www.ghost-trappers.com/fb/camp.php?action=armSetup&slot=1",true);
-
-	//Load the Attunement setup
     load_Attune.send();
 
 	//Let's See if there is a timer running on one of the scrolls
@@ -310,8 +307,9 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
             //has the scroll run out of time ?
             if (Scroll_Timer.match(/time is over/i))
             {
-                //remove it
-                document.getElementsByClassName('buttonRemove')[0].click();
+                //remove it //TO-DO add a delay to the click action
+                //document.getElementsByClassName('buttonRemove')[0].click();
+				setTimeout(function() {document.getElementsByClassName('buttonRemove')[0].click();}, 1500);
             }
             else //no?
             {
@@ -333,6 +331,12 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 
 	//Glyphs removed or No Glyphs to wait on ! Lets Load
 
+	/*load_Ritual.onreadystatechange=function() {
+	  if (load_Ritual.readyState==4 && load_Ritual.status==200) {
+		var response = load_Ritual.responseText;
+	  }
+	}*/
+
 	//if ((AutoLoadScroll === "true") && (hrs < 22)) //&& on eleventh page
 	//assuming that if i am here the slots are empty
 	var Slot = document.getElementById("glyphSelect1");
@@ -341,9 +345,11 @@ else if ((localStorage.AutoLoadScroll === "true") && (document.location.href.mat
 		for (var i = 0; i < document.getElementById("glyphSelect1").length; ++i)
 		{
 			if (Slot1_glyph === parseInt(document.getElementById("glyphSelect1").options[i].value))
-			{
+			{	
+				//TO-DO make these a sequence and add delays
 				Slot.value = Slot1_glyph;
 				//Change the Setup to get maximum Glyph time
+				load_Ritual.open("GET","http://www.ghost-trappers.com/fb/camp.php?action=armSetup&slot=1",true);
 				load_Ritual.send();
 				document.getElementsByClassName('buttonActivate')[0].click();
 				document.getElementById("popupButtonActivateGlyph").click();
